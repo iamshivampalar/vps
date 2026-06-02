@@ -1,0 +1,221 @@
+<%- include('../layouts/header') %>
+
+<!-- ADMIN DASHBOARD CONTAINER -->
+<div class="py-10 bg-slate-50 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- COCKPIT HEADER -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 border-b border-slate-200 pb-8">
+      <div>
+        <h1 class="text-3xl font-extrabold text-[#0F172A] tracking-tight font-poppins"><i class="bi bi-cpu-fill text-[#3B82F6]"></i> Enterprise Command Centers</h1>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">Hello, <strong class="text-slate-800"><%= user.name %></strong>! System privileges: <span class="bg-blue-150 text-accent text-[9px] px-2 py-0.5 rounded font-extrabold uppercase border border-blue-200/50"><%= user.role %></span></p>
+      </div>
+      <div class="flex flex-wrap gap-2.5">
+        <a href="/admin/internships" class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-1"><i class="bi bi-file-plus-fill"></i> New Internship</a>
+        <a href="/admin/tasks" class="border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-1"><i class="bi bi-journal-plus"></i> Launch Homework</a>
+        <a href="/admin/settings" class="bg-themePrimary hover:bg-slate-850 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-premium transition-all flex items-center gap-1"><i class="bi bi-gear-fill"></i> System Settings</a>
+      </div>
+    </div>
+
+    <!-- METRIC CARD WIDGET WEAVING -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-10">
+      
+      <!-- Total Students -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
+        <div class="flex justify-between items-start">
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total Fellows</p>
+          <span class="w-7 h-7 rounded bg-blue-50 text-accent flex items-center justify-center border border-blue-100 text-sm"><i class="bi bi-people-fill"></i></span>
+        </div>
+        <h3 class="text-2xl font-extrabold text-[#0F172A] mt-2 font-poppins"><%= metrics.totalStudents %></h3>
+        <p class="text-[10px] text-slate-400 mt-1">Enrolled candidate files</p>
+      </div>
+
+      <!-- Active Internships -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
+        <div class="flex justify-between items-start">
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Tracks</p>
+          <span class="w-7 h-7 rounded bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100 text-sm"><i class="bi bi-activity"></i></span>
+        </div>
+        <h3 class="text-2xl font-extrabold text-[#0F172A] mt-2 font-poppins"><%= metrics.activeInternships %></h3>
+        <p class="text-[10px] text-slate-400 mt-1">Out of <%= metrics.totalInternships %> published</p>
+      </div>
+
+      <!-- Completed Internships -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
+        <div class="flex justify-between items-start">
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Graduates count</p>
+          <span class="w-7 h-7 rounded bg-indigo-50 text-[#3B82F6] flex items-center justify-center border border-indigo-100 text-sm"><i class="bi bi-mortarboard-fill"></i></span>
+        </div>
+        <h3 class="text-2xl font-extrabold text-[#0F172A] mt-2 font-poppins"><%= metrics.completedInternships %></h3>
+        <p class="text-[10px] text-slate-400 mt-1">Tracks successfully completed</p>
+      </div>
+
+      <!-- Issued Certificates -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
+        <div class="flex justify-between items-start">
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Awards Verified</p>
+          <span class="w-7 h-7 rounded bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-100 text-sm"><i class="bi bi-patch-check-fill"></i></span>
+        </div>
+        <h3 class="text-2xl font-extrabold text-[#0F172A] mt-2 font-poppins"><%= metrics.certificatesIssued %></h3>
+        <p class="text-[10px] text-slate-400 mt-1">QR secured digital marks</p>
+      </div>
+
+      <!-- Unread Messages -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm">
+        <div class="flex justify-between items-start">
+          <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Support Queries</p>
+          <span class="w-7 h-7 rounded bg-rose-50 text-rose-500 flex items-center justify-center border border-rose-100 text-sm"><i class="bi bi-envelope-heart-fill"></i></span>
+        </div>
+        <h3 class="text-2xl font-extrabold text-[#0F172A] mt-2 font-poppins"><%= growthMetrics.unreadMessages %></h3>
+        <p class="text-[10px] text-slate-400 mt-1">Pending contact forms</p>
+      </div>
+
+    </div>
+
+    <!-- ANALYTICS CHARTS & INBOX VIEWS GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+      
+      <!-- Linear Growth trends Chart (2/3 columns) -->
+      <div class="lg:col-span-2 bg-white border border-slate-100 shadow-premium rounded-2xl p-6">
+        <div class="border-b border-slate-50 pb-3 mb-6">
+          <h3 class="font-bold text-slate-800 text-sm font-poppins"><i class="bi bi-graph-up text-[#3B82F6]"></i> Fellow Registrations & Growth metrics</h3>
+        </div>
+        <div class="relative w-full h-64">
+          <!-- Canvas handles ChartJS compiling -->
+          <canvas id="growthChart" class="w-full h-full"></canvas>
+        </div>
+      </div>
+
+      <!-- Fast Analytics Widgets right pane -->
+      <div class="bg-white border border-slate-100 shadow-premium rounded-2xl p-6 h-fit">
+        <div class="border-b border-slate-50 pb-3 mb-4">
+          <h3 class="font-bold text-slate-800 text-sm font-poppins"><i class="bi bi-lightning-charge-fill text-gold"></i> Live Campaign Statuses</h3>
+        </div>
+        <div class="space-y-4 text-xs">
+          
+          <div class="flex justify-between items-center bg-slate-50 border border-slate-100 p-3 rounded-xl">
+            <span class="text-slate-500 font-semibold">Total Referral Clicks:</span>
+            <span class="font-bold text-slate-800 font-mono"><%= growthMetrics.referralClicksCount %> click coordinates</span>
+          </div>
+
+          <div class="flex justify-between items-center bg-slate-50 border border-slate-100 p-3 rounded-xl">
+            <span class="text-slate-500 font-semibold">Campaign Growth Ratio:</span>
+            <span class="font-bold text-[#22C55E] font-poppins"><%= growthMetrics.growthRate %> registrations pace</span>
+          </div>
+
+          <div class="flex justify-between items-center bg-slate-50 border border-slate-100 p-3 rounded-xl">
+            <span class="text-slate-500 font-semibold">Current System Date:</span>
+            <span class="font-semibold text-slate-700 font-mono"><%= new Date().toLocaleDateString() %></span>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RECENT WORK SUBMISSIONS WORKSPACE AND APPLICATIONS TIMELINE -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      
+      <!-- Homework Submissions pending scoring reviews -->
+      <div class="bg-white border border-slate-100 shadow-premium rounded-2xl p-6">
+        <div class="border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
+          <h3 class="font-bold text-slate-800 text-sm font-poppins">Homework Review Queue</h3>
+          <a href="/admin/submissions" class="text-xs text-accent font-semibold hover:underline">View All Options</a>
+        </div>
+
+        <div class="space-y-3">
+          <% if (pendingSubmissions.length > 0) { %>
+            <% pendingSubmissions.forEach(sub => { %>
+              <div class="text-xs border border-slate-150 p-4 rounded-xl flex items-center justify-between gap-4 bg-slate-50/10">
+                <div>
+                  <h4 class="font-bold text-slate-800"><%= sub.task.title %></h4>
+                  <p class="text-slate-500 mt-1 text-[10px]">Submitted by: <strong class="text-slate-700"><%= sub.student.user.name %></strong> (<%= sub.task.internship.title %>)</p>
+                </div>
+                <a href="/admin/submissions" class="bg-themePrimary text-white hover:bg-accent text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 tracking-wider uppercase select-none">
+                   Test Appraisal <i class="bi bi-chevron-right text-[8px]"></i>
+                </a>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <p class="text-center text-slate-400 py-6 text-xs">All submitted homework workloads appraised cleanly.</p>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Recent Applications waiting enrollment approval -->
+      <div class="bg-white border border-slate-100 shadow-premium rounded-2xl p-6">
+        <div class="border-b border-slate-100 pb-3 mb-4 flex justify-between items-center">
+          <h3 class="font-bold text-slate-800 text-sm font-poppins">Recent Application requests</h3>
+          <a href="/admin/applications" class="text-xs text-accent font-semibold hover:underline font-poppins">Verify Admissions</a>
+        </div>
+
+        <div class="space-y-3">
+          <% if (recentApplications.length > 0) { %>
+            <% recentApplications.forEach(app => { %>
+              <div class="text-xs border border-slate-150 p-4 rounded-xl flex items-center justify-between gap-4 bg-slate-50/10">
+                <div>
+                  <h4 class="font-bold text-slate-800"><%= app.student.user.name %></h4>
+                  <p class="text-slate-500 mt-1 text-[11px]">Applied to track: <strong class="text-slate-700"><%= app.internship.title %></strong></p>
+                </div>
+                
+                <% if (app.status === 'Approved') { %>
+                  <span class="text-[9px] bg-emerald-50 text-emerald-700 font-extrabold px-2 py-0.5 rounded border border-emerald-100 flex items-center gap-1 uppercase tracking-wider">Approved</span>
+                <% } else if (app.status === 'Completed') { %>
+                  <span class="text-[9px] bg-[#0F172A] text-white font-extrabold px-2 py-0.5 rounded uppercase tracking-wider flex items-center gap-1"><i class="bi bi-patch-check-fill text-gold"></i> Completes</span>
+                <% } else if (app.status === 'Rejected') { %>
+                  <span class="text-[9px] bg-rose-50 text-rose-750 font-extrabold px-2 py-0.5 rounded border border-rose-100 uppercase tracking-wide">Rejected</span>
+                <% } else { %>
+                  <a href="/admin/applications" class="border border-slate-300 hover:bg-slate-50 text-[10px] font-bold px-3 py-1.5 rounded-lg flex items-center gap-1 uppercase tracking-wider">
+                     Audit Gate
+                  </a>
+                <% } %>
+              </div>
+            <% }) %>
+          <% } else { %>
+            <p class="text-center text-slate-400 py-6 text-xs">No pending application requests recorded yet.</p>
+          <% } %>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- Incorporate Chart.js compiled script -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Setup registrations growth trend line chart
+  const ctx = document.getElementById('growthChart');
+  if (ctx) {
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+        datasets: [{
+          label: 'Student registrations trend',
+          data: [12, 19, 28, 32, 45, 64],
+          borderColor: '#3B82F6',
+          backgroundColor: 'rgba(59, 130, 246, 0.05)',
+          tension: 0.4,
+          fill: true,
+          borderWidth: 2,
+          pointRadius: 3
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: { grid: { color: '#F1F5F9' }, ticks: { font: { size: 10 } } },
+          x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+        }
+      }
+    });
+  }
+</script>
+
+<%- include('../layouts/footer') %>

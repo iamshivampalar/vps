@@ -1,0 +1,177 @@
+<%- include('../layouts/header') %>
+
+<div class="py-10 bg-slate-50 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- PLATFORM PUBLISH HEADER -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 border-b border-slate-200 pb-6">
+      <div>
+        <h1 class="text-2xl font-extrabold text-[#0F172A] tracking-tight font-poppins"><i class="bi bi-file-earmark-plus-fill text-accent"></i> Fellowship Program Tracks</h1>
+        <p class="text-xs text-slate-500 mt-1">Configure curriculum details, limit cohort sizes, or toggle publish states.</p>
+      </div>
+      <div>
+        <button onclick="document.getElementById('addTrackModal').classList.toggle('hidden')" class="bg-[#3B82F6] hover:bg-blue-600 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-premium flex items-center gap-1 leading-snug"><i class="bi bi-plus-lg"></i> Launch Fellowship Track</button>
+      </div>
+    </div>
+
+    <!-- MOUNT REVOLUTIONARY MODAL INTENT -->
+    <div id="addTrackModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl p-6 border border-slate-100 animate-fade-in">
+        
+        <div class="border-b border-slate-100 pb-3 mb-5 flex justify-between items-center">
+          <h3 class="font-extrabold text-[#0F172A] text-base font-poppins">Launch Fellowship Track</h3>
+          <button onclick="document.getElementById('addTrackModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600"><i class="bi bi-x-lg"></i></button>
+        </div>
+
+        <form id="addTrackForm" onsubmit="submitNewTrack(event)" class="space-y-4">
+          
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase">Program Title</label>
+            <input type="text" id="title" required placeholder="e.g. Advanced Bioinformatics internship" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none">
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase">Description Objectives</label>
+            <textarea id="description" required rows="4" placeholder="Specify program objectives..." class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none"></textarea>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold text-slate-500 uppercase">Category</label>
+              <input type="text" id="category" required placeholder="e.g. Web Development" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none">
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold text-slate-500 uppercase">Duration Duration</label>
+              <input type="text" id="duration" required placeholder="e.g. 12 Weeks" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold text-slate-500 uppercase">Scholastic Eligibility</label>
+              <input type="text" id="eligibility" required placeholder="e.g. Enrolled CS Graduate" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none">
+            </div>
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold text-slate-500 uppercase">Maximum Seats Scale</label>
+              <input type="number" id="seats" required placeholder="e.g. 15" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none">
+            </div>
+          </div>
+
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase">Required Skill Sets (comma separated)</label>
+            <input type="text" id="skills" required placeholder="e.g. Git, React, Node, CSS..." class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none">
+          </div>
+
+          <div class="flex items-center gap-2 py-1">
+             <input type="checkbox" id="certificateAvailable" checked class="w-4 h-4 border-slate-200 rounded text-accent">
+             <label for="certificateAvailable" class="text-xs text-slate-500 font-semibold select-none">Completion Digital Certificate available upon milestone wrap</label>
+          </div>
+
+          <button type="submit" id="submitBtn" class="w-full bg-[#0F172A] text-white font-bold py-2.5 rounded-lg text-xs mt-3 shadow-premium transition-colors">Publish Track Online</button>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- PUBLISHED INTERNSHIPS GRID -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <% internships.forEach(item => { %>
+        <div class="bg-white border border-slate-100 shadow-premium rounded-2xl p-6 flex flex-col justify-between gap-5">
+          
+          <div class="flex justify-between items-start gap-2">
+            <span class="text-[9px] bg-blue-50 text-accent font-extrabold px-2.5 py-1 rounded-full uppercase border border-blue-105 tracking-wide"><%= item.category %></span>
+            
+            <% if (item.status === 'active') { %>
+               <span class="text-[9px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded border border-emerald-100 uppercase">Active</span>
+            <% } else { %>
+               <span class="text-[9px] bg-rose-50 text-rose-700 font-bold px-2 py-0.5 rounded border border-rose-100 uppercase">Closed</span>
+            <% } %>
+          </div>
+
+          <div>
+            <h3 class="text-base font-bold text-slate-800 font-poppins mt-2"><%= item.title %></h3>
+            <p class="text-xs text-slate-450 mt-1.5 line-clamp-3 leading-relaxed"><%= item.description %></p>
+          </div>
+
+          <div class="border-t border-slate-50 pt-4 flex justify-between items-center text-[10px] text-slate-400 font-mono font-bold uppercase mt-auto">
+            <span>Seats: <strong class="text-slate-850"><%= item.seats %></strong></span>
+            <span>Duration: <strong class="text-slate-850"><%= item.duration %></strong></span>
+          </div>
+
+          <div class="border-t border-slate-50 pt-3 flex gap-2 w-full mt-2">
+            <% if (item.status === 'active') { %>
+              <button onclick="toggleTrackStatus('<%= item.id %>', 'closed')" class="w-full border border-rose-250 p-2 text-[10px] rounded-lg text-rose-500 font-bold hover:bg-rose-50/20">Close Program</button>
+            <% } else { %>
+              <button onclick="toggleTrackStatus('<%= item.id %>', 'active')" class="w-full border border-emerald-250 p-2 text-[10px] rounded-lg text-emerald-600 font-bold hover:bg-emerald-50/20">Open Program</button>
+            <% } %>
+          </div>
+
+        </div>
+      <% }) %>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  async function submitNewTrack(event) {
+    event.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    if (!btn) return;
+
+    btn.disabled = true;
+    btn.innerHTML = 'Publishing...';
+
+    const payload = {
+      title: document.getElementById('title').value,
+      description: document.getElementById('description').value,
+      category: document.getElementById('category').value,
+      duration: document.getElementById('duration').value,
+      eligibility: document.getElementById('eligibility').value,
+      seats: document.getElementById('seats').value,
+      skills: document.getElementById('skills').value,
+      certificateAvailable: String(document.getElementById('certificateAvailable').checked)
+    };
+
+    try {
+      const response = await fetch('/admin/internships/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        const data = await response.json();
+        alert('Err: ' + (data.error || 'Failed to create.'));
+        btn.disabled = false;
+        btn.innerHTML = 'Publish Track Online';
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Internal Server Error syncing programs list.');
+      btn.disabled = false;
+      btn.innerHTML = 'Publish Track Online';
+    }
+  }
+
+  async function toggleTrackStatus(id, status) {
+    try {
+      const response = await fetch('/admin/internships/toggle-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, status })
+      });
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        alert('Failed updating statuses.');
+      }
+    } catch (e) {
+       console.error(e);
+    }
+  }
+</script>
+
+<%- include('../layouts/footer') %>

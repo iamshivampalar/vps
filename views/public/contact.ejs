@@ -1,0 +1,90 @@
+<%- include('../layouts/header') %>
+
+<section class="py-16 bg-slate-50 min-h-screen">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <div class="text-center mb-12">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight font-poppins">Get in Touch with Officers</h1>
+      <p class="text-slate-500 mt-2">Questions about admissions, partnerships, or credential verification? Submit a secure inquiry ticket.</p>
+    </div>
+
+    <div class="bg-white border border-slate-100 rounded-3xl shadow-premium p-8 md:p-12">
+      <form id="contactForm" onsubmit="submitContactForm(event)" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        
+        <!-- Contact Name -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-slate-500 uppercase">Your Name</label>
+          <input type="text" id="name" required placeholder="e.g. Jean Dupont" class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:border-accent focus:outline-none">
+        </div>
+
+        <!-- Contact Email -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-slate-500 uppercase">Email Address</label>
+          <input type="email" id="email" required placeholder="e.g. jean.dupont@gmail.com" class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:border-accent focus:outline-none">
+        </div>
+
+        <!-- Contact Subject -->
+        <div class="flex flex-col gap-1.5 md:col-span-2">
+          <label class="text-xs font-bold text-slate-500 uppercase">Subject Topic</label>
+          <input type="text" id="subject" required placeholder="e.g. University Partnerships / Admissions Review" class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:border-accent focus:outline-none">
+        </div>
+
+        <!-- Contact Message -->
+        <div class="flex flex-col gap-1.5 md:col-span-2">
+          <label class="text-xs font-bold text-slate-500 uppercase">Message Inquiry</label>
+          <textarea id="message" required rows="5" placeholder="Share your academic or organizational queries..." class="w-full px-4 py-3 border border-slate-200 rounded-xl text-sm focus:border-accent focus:outline-none"></textarea>
+        </div>
+
+        <!-- Submission Trigger -->
+        <div class="md:col-span-2 pt-4">
+          <button type="submit" id="submitBtn" class="w-full bg-themePrimary hover:bg-accent text-white font-semibold py-3.5 px-4 rounded-xl shadow-premium transition-all">Submit Secure Inquiry</button>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  async function submitContactForm(event) {
+    event.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    if (!btn) return;
+
+    btn.disabled = true;
+    btn.innerHTML = 'Receiving...';
+
+    const payload = {
+      name: document.getElementById('name').value,
+      email: document.getElementById('email').value,
+      subject: document.getElementById('subject').value,
+      message: document.getElementById('message').value
+    };
+
+    try {
+      const response = await fetch('/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert('Thank you! Your inquiries are recorded securely. Coordination officers will review shortly.');
+        document.getElementById('contactForm').reset();
+      } else {
+        alert('Err: ' + (data.error || 'Failed to register message.'));
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Network failure connecting to administrative support tickets.');
+    } finally {
+      btn.disabled = false;
+      btn.innerHTML = 'Submit Secure Inquiry';
+    }
+  }
+</script>
+
+<%- include('../layouts/footer') %>

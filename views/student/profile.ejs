@@ -1,0 +1,112 @@
+<%- include('../layouts/header') %>
+
+<div class="py-12 bg-slate-50 min-h-screen">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <!-- Navigation row back -->
+    <a href="/student/dashboard" class="inline-flex items-center gap-1.5 text-sm font-semibold text-slate-500 hover:text-slate-900 mb-8 select-none">
+      <i class="bi bi-arrow-left"></i> Return to Workspace Dashboard
+    </a>
+
+    <!-- PROFILE SUBMIT CARD -->
+    <div class="bg-white border border-slate-100 rounded-3xl shadow-premium p-8 md:p-10">
+      
+      <div class="border-b border-slate-100 pb-5 mb-8">
+        <h1 class="text-2xl font-extrabold text-[#0F172A] tracking-tight font-poppins"><i class="bi bi-person-id text-[#3B82F6]"></i> Setup Scholastic Portfolio</h1>
+        <p class="text-xs text-slate-400 mt-1">Update your dossiers so academic partner committees and supervisors can audit submissions and qualify awards.</p>
+      </div>
+
+      <form action="/student/profile/update" method="POST" enctype="multipart/form-data" class="space-y-6">
+        
+        <!-- Files upload row -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 bg-slate-50 border border-slate-150 p-6 rounded-2xl">
+          
+          <!-- Avatar Upload -->
+          <div class="flex flex-col gap-2">
+            <label class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Avatar Photo Picture (JPG/PNG)</label>
+            <% if (user.avatar) { %>
+              <div class="flex items-center gap-3 mb-2">
+                <img src="<%= user.avatar %>" alt="Avatar" class="w-10 h-10 rounded-full object-cover border border-slate-200">
+                <span class="text-xs text-slate-400">Current Photo Active</span>
+              </div>
+            <% } %>
+            <input type="file" name="avatar" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-[#3B82F6] hover:file:bg-blue-100">
+          </div>
+
+          <!-- CV Resume Upload -->
+          <div class="flex flex-col gap-2">
+            <label class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider">Official CV / Resume Booklet (PDF)</label>
+            <% if (student.resume) { %>
+              <div class="flex items-center gap-2 mb-2">
+                <i class="bi bi-file-earmark-pdf-fill text-rose-500 text-lg"></i>
+                <a href="<%= student.resume %>" target="_blank" class="text-xs text-accent font-semibold underline truncate max-w-[150px]">Current CV PDF</a>
+              </div>
+            <% } %>
+            <input type="file" name="resume" class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100">
+          </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          
+          <!-- Full name -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase">Scholastic Name</label>
+            <input type="text" name="name" value="<%= user.name %>" required class="w-full px-4 py-2.5 border border-slate-200 focus:border-accent rounded-xl text-sm focus:outline-none">
+          </div>
+
+          <!-- Phone mobile -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase">Contact Mobile</label>
+            <input type="text" name="mobile" value="<%= user.mobile || '' %>" class="w-full px-4 py-2.5 border border-slate-200 focus:border-accent rounded-xl text-sm focus:outline-none">
+          </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          
+          <!-- Degree -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase">Specialization Degree</label>
+            <input type="text" name="degree" value="<%= student.degree || '' %>" class="w-full px-4 py-2.5 border border-slate-200 focus:border-accent rounded-xl text-sm focus:outline-none">
+          </div>
+
+          <!-- Semester -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase">Current Semester / Grade Phase</label>
+            <input type="text" name="semester" value="<%= student.semester || '' %>" class="w-full px-4 py-2.5 border border-slate-200 focus:border-accent rounded-xl text-sm focus:outline-none">
+          </div>
+
+        </div>
+
+        <!-- University Dropdown select -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-slate-500 uppercase">Affiliated Partner University</label>
+          <select name="collegeId" required class="w-full px-3 py-2.5 border border-slate-200 focus:border-accent rounded-xl text-sm focus:outline-none">
+            <option value="">-- Choose Allied Institute --</option>
+            <% colleges.forEach(clg => { %>
+              <option value="<%= clg.id %>" <%= student.collegeId === clg.id ? 'selected' : '' %>><%= clg.name %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <!-- Portfolios Skills tags -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-slate-500 uppercase">Workspace Skills tags (comma separated)</label>
+          <input type="text" name="skills" value="<%= student.skills || '' %>" placeholder="e.g. HTML, Node.js, Python, CSS..." class="w-full px-4 py-2.5 border border-slate-200 focus:border-accent rounded-xl text-sm focus:outline-none">
+          <span class="text-[10px] text-slate-400 font-medium">Please separate tags with commas to make visual labels in internship dashboards.</span>
+        </div>
+
+        <!-- Submit btn -->
+        <div class="pt-4">
+          <button type="submit" class="w-full bg-themePrimary hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl shadow-premium transition-colors">Commit Dossier Changes</button>
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+</div>
+
+<%- include('../layouts/footer') %>

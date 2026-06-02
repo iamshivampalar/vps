@@ -1,0 +1,80 @@
+  <% 
+    const isManagementPage = (typeof user !== 'undefined' && user !== null) && 
+      !['Premium', 'Our Mission', 'Available', 'Connect', 'Digital Credential', 'Privacy', 'Terms', 'Frequently', 'Error', 'Not Found'].some(term => title.includes(term)); 
+  %>
+
+  <!-- Close main scrollable panels and desktop layout wrapper started in header.ejs -->
+  <% if (isManagementPage) { %>
+        </div> <!-- End scrollable container -->
+      </div> <!-- End main panel wrapper -->
+    </div> <!-- End desktop side-by-side layout wrapper -->
+  <% } %>
+
+  <!-- Footer blocks -->
+  <% if (!isManagementPage) { %>
+  <footer class="bg-[#0F172A] text-white border-t border-slate-900 mt-20 transition-all font-sans">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        
+        <!-- Pillar Info -->
+        <div class="md:col-span-1.5 flex flex-col gap-4">
+          <a href="/" class="flex items-center gap-2 text-xl font-extrabold tracking-tight font-poppins text-white">
+            <i class="bi bi-rocket-takeoff-fill text-accent"></i> InternSpace
+          </a>
+          <p class="text-xs text-slate-400 max-w-xs leading-relaxed">
+            The premium training program ecosystem. Track homework milestones, audit student performance, and issue cryptographically verifiable credentials seamlessly.
+          </p>
+          <div class="flex items-center gap-3 mt-2 text-slate-400">
+            <a href="#" class="hover:text-accent"><i class="bi bi-twitter"></i></a>
+            <a href="#" class="hover:text-accent"><i class="bi bi-github"></i></a>
+            <a href="#" class="hover:text-accent"><i class="bi bi-linkedin"></i></a>
+          </div>
+        </div>
+
+        <!-- Pillar Links -->
+        <div class="flex flex-col gap-3">
+          <h4 class="text-xs font-bold text-slate-300 uppercase letter-wider font-poppins">Fellowship Core</h4>
+          <a href="/programs" class="text-xs text-slate-400 hover:text-white transition-colors">Program Listings</a>
+          <a href="/about" class="text-xs text-slate-400 hover:text-white transition-colors">About & Impact Story</a>
+          <a href="/faq" class="text-xs text-slate-400 hover:text-white transition-colors">FAQ Registry</a>
+          <a href="/verify" class="text-xs text-slate-400 hover:text-white transition-colors">Verify Certificate</a>
+        </div>
+
+        <!-- Pillar Partners -->
+        <div class="flex flex-col gap-3">
+          <h4 class="text-xs font-bold text-slate-300 uppercase letter-wider font-poppins">Governance</h4>
+          <a href="/auth/login" class="text-xs text-slate-400 hover:text-white transition-colors">Portal Login</a>
+          <a href="/auth/register" class="text-xs text-slate-400 hover:text-white transition-colors">Join as Fellow</a>
+          <a href="/contact" class="text-xs text-slate-400 hover:text-white transition-colors">Help & Officers</a>
+        </div>
+
+        <!-- Pillar Newsletter -->
+        <div class="flex flex-col gap-3">
+          <h4 class="text-xs font-bold text-slate-300 uppercase letter-wider font-poppins">Credentials Registry</h4>
+          <p class="text-xs text-slate-400 leading-normal">
+            Verify issued awards instantly. Enter custom hash codes in the lookup registries above.
+          </p>
+          <div class="mt-2 text-xs bg-slate-900 border border-slate-800 text-slate-400 px-3 py-2 rounded-lg flex items-center gap-1.5 font-mono">
+            <i class="bi bi-shield-lock-fill text-gold"></i> SHA-256 Verified
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Trademark baseline -->
+      <div class="border-t border-slate-900 mt-12 pt-6 flex flex-col md:flex-row items-center justify-between text-xs text-slate-500 gap-4">
+        <span>&copy; <%= currentYear %> InternSpace Technology Academic Collaborative (ITAC). All Corporate Rights Reserved.</span>
+        <div class="flex items-center gap-6">
+          <a href="/privacy" class="hover:text-slate-300">Privacy Policy</a>
+          <a href="/terms" class="hover:text-slate-300">Terms of Use</a>
+        </div>
+      </div>
+
+    </div>
+  </footer>
+  <% } %>
+
+  <!-- Shared Bootstrap Javascript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

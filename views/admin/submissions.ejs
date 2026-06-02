@@ -1,0 +1,260 @@
+<%- include('../layouts/header') %>
+
+<div class="py-10 bg-slate-50 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- COCKPIT CONTROL HEADER -->
+    <div class="mb-8 border-b border-slate-200 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-extrabold text-[#0F172A] tracking-tight font-poppins"><i class="bi bi-card-checklist text-accent"></i> Curriculum Appraisal Queue</h1>
+        <p class="text-xs text-slate-500 mt-1 font-sans">Appraise student deliverables, assign grade marks, request homework revisions, and generate credentials.</p>
+      </div>
+      
+      <!-- Bulk actions -->
+      <div class="bg-indigo-50 border border-indigo-150 rounded-xl px-4 py-2 text-xs flex items-center gap-1.5 font-bold text-indigo-700">
+         <i class="bi bi-patch-check-fill text-gold animate-pulse"></i> Complete credentials issuance integrated below.
+      </div>
+    </div>
+
+    <!-- MAIN EXERCISE queue TABLE -->
+    <div class="bg-white border border-slate-100 shadow-premium rounded-2xl overflow-hidden mb-10">
+      <table class="table-auto w-full text-left text-xs">
+        
+        <thead>
+          <tr class="bg-slate-100/50 border-b border-slate-105 text-[10px] font-extrabold uppercase text-slate-450 tracking-wider">
+            <th class="px-6 py-4">Fellow Student</th>
+            <th class="px-6 py-4">Assigned Task requirements</th>
+            <th class="px-6 py-4">Submittals Spec</th>
+            <th class="px-6 py-4">Outcome Grades</th>
+            <th class="px-6 py-4 text-right">Appraisal Actions</th>
+          </tr>
+        </thead>
+
+        <tbody class="divide-y divide-slate-105">
+          <% if (submissions.length > 0) { %>
+            <% submissions.forEach(sub => { %>
+              <tr class="hover:bg-slate-50/20 transition-colors">
+                
+                <td class="px-6 py-4">
+                  <h4 class="font-bold text-slate-800 text-sm"><%= sub.student.user.name %></h4>
+                  <p class="text-[10px] text-slate-400 font-mono"><%= sub.student.user.email %></p>
+                </td>
+
+                <td class="px-6 py-4">
+                  <p class="font-semibold text-[#0F172A]"><%= sub.task.title %></p>
+                  <p class="text-[10px] text-slate-400 mt-0.5"><%= sub.task.internship.title %> • Scale: <%= sub.task.maxPoints %> pts</p>
+                </td>
+
+                <td class="px-6 py-4">
+                  <p class="text-slate-600 line-clamp-2 italic"><%= sub.submissionText %></p>
+                  <% if (sub.attachments) { %>
+                    <div class="mt-1.5 flex items-center gap-1.5">
+                      <i class="bi bi-paperclip text-slate-400"></i>
+                      <a href="<%= sub.attachments %>" target="_blank" class="text-[10px] text-accent hover:underline font-bold">Inspect attached file</a>
+                    </div>
+                  <% } %>
+                </td>
+
+                <td class="px-6 py-4">
+                  <% if (sub.status === 'Approved') { %>
+                    <span class="text-[9px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded border border-emerald-100 uppercase">Approved (<%= sub.grade %> pts)</span>
+                  <% } else if (sub.status === 'Revision Requested') { %>
+                    <span class="text-[9px] bg-amber-50 text-amber-700 font-bold px-2 py-0.5 rounded border border-amber-100 uppercase">Revise Checking</span>
+                  <% } else if (sub.status === 'Rejected') { %>
+                    <span class="text-[9px] bg-rose-50 text-rose-700 font-bold px-2 py-0.5 rounded border border-rose-100 uppercase">Rejected</span>
+                  <% } else { %>
+                    <span class="text-[9px] bg-blue-50 text-[#3B82F6] font-bold px-2 py-0.5 rounded border border-blue-105 uppercase">Under appraisal</span>
+                  <% } %>
+                </td>
+
+                <td class="px-6 py-4 text-right">
+                  <div class="flex justify-end gap-2">
+                    <button onclick="openGradingModal('<%= sub.id %>', '<%= sub.task.maxPoints %>', '<%= sub.grade || 0 %>')" class="bg-themePrimary hover:bg-accent text-white font-semibold px-3 py-1.5 rounded-lg text-[10px] leading-snug">Evaluate</button>
+                    
+                    <!-- Direct credential issue if student complete track -->
+                    <button onclick="openIssuerModal('<%= sub.student.id %>', '<%= sub.task.internship.id %>')" class="border border-indigo-250 hover:bg-slate-50 text-indigo-700 font-bold px-3 py-1.5 rounded-lg text-[10px] leading-snug flex items-center gap-1"><i class="bi bi-shield-fill text-gold"></i> Issue cert</button>
+                  </div>
+                </td>
+
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr><td colspan="5" class="text-center py-10 text-slate-400">All homework workloads evaluated cleanly.</td></tr>
+          <% } %>
+        </tbody>
+
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<!-- BLOCK: APPRAISAL MARK GRADING POPUP MODAL -->
+<div id="gradingModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 border border-slate-100 animate-fade-in">
+    
+    <div class="border-b border-slate-100 pb-3 mb-5 flex justify-between items-center">
+      <h3 class="font-extrabold text-[#0F172A] text-base font-poppins">Evaluate Homework Assignment</h3>
+      <button onclick="document.getElementById('gradingModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <form id="gradingForm" onsubmit="submitGrading(event)" class="space-y-4">
+      <input type="hidden" id="subId">
+
+      <div class="grid grid-cols-2 gap-4">
+        <div class="flex flex-col gap-1.5">
+           <label class="text-xs font-bold text-slate-500 uppercase">Task points Scale</label>
+           <div id="maxPointsLabel" class="text-xs font-bold text-slate-800 bg-slate-100 p-2.5 rounded-lg font-mono"></div>
+        </div>
+        <div class="flex flex-col gap-1.5">
+           <label class="text-xs font-bold text-slate-500 uppercase">Assigned Score grade</label>
+           <input type="number" id="assignedGrade" required class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs font-mono focus:outline-none">
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-bold text-slate-500 uppercase">Evaluate Review Status</label>
+        <select id="reviewStatus" required class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none">
+          <option value="Approved">Approved - Milestone Passed</option>
+          <option value="Revision Requested">Revision Requested - Notes Issued</option>
+          <option value="Rejected">Rejected - Disapproved</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="text-xs font-bold text-slate-500 uppercase">Coordinator remarks feedback</label>
+        <textarea id="feedbackNotes" required rows="4" placeholder="Brief feedback remarks explaining outcome grades..." class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none"></textarea>
+      </div>
+
+      <button type="submit" id="submitGradingBtn" class="w-full bg-[#0F172A] text-white font-bold py-2.5 rounded-lg text-xs mt-3 shadow-premium transition-colors">Commit evaluation score</button>
+
+    </form>
+  </div>
+</div>
+
+<!-- BLOCK: SECURITY CREDENTIAL CERTIFICATE GENERATOR POPUP -->
+<div id="issuerModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 flex items-center justify-center p-4">
+  <div class="bg-white rounded-3xl w-full max-w-md shadow-2xl p-6 border border-slate-100 animate-fade-in">
+    
+    <div class="border-b border-slate-100 pb-3 mb-5 flex justify-between items-center">
+      <h3 class="font-extrabold text-[#0F172A] text-base font-poppins"><i class="bi bi-shield-fill text-gold"></i> Issue credentials digital Award</h3>
+      <button onclick="document.getElementById('issuerModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600"><i class="bi bi-x-lg"></i></button>
+    </div>
+
+    <!-- Real action generating PDF with QR -->
+    <form id="issuerForm" onsubmit="submitCertIssuer(event)" class="space-y-4">
+      <input type="hidden" id="issueStudentId">
+      <input type="hidden" id="issueInternshipId">
+
+      <p class="text-xs text-slate-500 leading-relaxed">This action runs the <strong class="text-slate-700 font-mono">pdfkit</strong> and <strong class="text-slate-700 font-mono">qrcode</strong> compiling pipeline instantly. A verifiable certificate will be permanently catalogued under the student profile records.</p>
+      
+      <div class="flex flex-col gap-1.5">
+         <label class="text-xs font-bold text-slate-500 uppercase">Set grading completion state label</label>
+         <input type="text" id="gradeLabel" value="Excellent" required placeholder="e.g. Magnificent / First Class honors" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none">
+      </div>
+
+      <div class="bg-amber-50 border border-amber-100 rounded-xl p-3.5 text-[11px] text-amber-805 flex items-start gap-1.5">
+         <i class="bi bi-shield-lock-fill text-gold mt-0.5"></i> Set verification timestamp. Students get emailed copies automatically upon credential sign.
+      </div>
+
+      <button type="submit" id="submitIssuerBtn" class="w-full bg-[#4F46E5] text-white font-bold py-2.5 rounded-lg text-xs mt-3 shadow-premium transition-colors">Issue award certificate & notify candidate</button>
+
+    </form>
+  </div>
+</div>
+
+<script>
+  let evaluatedSubId = '';
+
+  function openGradingModal(subId, maxPoints, currentGrade) {
+    evaluatedSubId = subId;
+    document.getElementById('subId').value = subId;
+    document.getElementById('maxPointsLabel').innerText = `/ ${maxPoints} Total points possible`;
+    document.getElementById('assignedGrade').value = currentGrade;
+    document.getElementById('gradingModal').classList.remove('hidden');
+  }
+
+  async function submitGrading(event) {
+    event.preventDefault();
+    const btn = document.getElementById('submitGradingBtn');
+    if (!btn) return;
+
+    btn.disabled = true;
+    btn.innerHTML = 'Committing evaluation...';
+
+    const payload = {
+      submissionId: evaluatedSubId,
+      grade: document.getElementById('assignedGrade').value,
+      status: document.getElementById('reviewStatus').value,
+      feedback: document.getElementById('feedbackNotes').value
+    };
+
+    try {
+      const response = await fetch('/admin/submissions/appraise', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        const data = await response.json();
+        alert('Action failed: ' + (data.error || 'Check fields constraints.'));
+        btn.disabled = false;
+        btn.innerHTML = 'Commit evaluation score';
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Internal Server Error syncing evaluation.');
+      btn.disabled = false;
+      btn.innerHTML = 'Commit evaluation score';
+    }
+  }
+
+  function openIssuerModal(stdId, internId) {
+    document.getElementById('issueStudentId').value = stdId;
+    document.getElementById('issueInternshipId').value = internId;
+    document.getElementById('issuerModal').classList.remove('hidden');
+  }
+
+  async function submitCertIssuer(event) {
+    event.preventDefault();
+    const btn = document.getElementById('submitIssuerBtn');
+    if (!btn) return;
+
+    btn.disabled = true;
+    btn.innerHTML = 'Generating security sign with QR codes...';
+
+    const payload = {
+      studentId: document.getElementById('issueStudentId').value,
+      internshipId: document.getElementById('issueInternshipId').value,
+      gradeLabel: document.getElementById('gradeLabel').value
+    };
+
+    try {
+      const response = await fetch('/admin/submissions/certificate/issue', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (response.ok) {
+        alert('Credentials Issued Successfully! Certificate PDF generated, signed, and saved to static storage registries.');
+        window.location.reload();
+      } else {
+        const d = await response.json();
+        alert('Failed issuing marks: ' + (d.error || 'Internal sign failure.'));
+        btn.disabled = false;
+        btn.innerHTML = 'Issue award certificate & notify candidate';
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Network timeout conducting digital sign verification actions.');
+      btn.disabled = false;
+      btn.innerHTML = 'Issue award certificate & notify candidate';
+    }
+  }
+</script>
+
+<%- include('../layouts/footer') %>

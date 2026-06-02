@@ -1,0 +1,157 @@
+<%- include('../layouts/header') %>
+
+<section class="py-16 bg-slate-50 min-h-[90vh] flex items-center">
+  <div class="max-w-xl w-full mx-auto px-4">
+    
+    <div class="bg-white border border-slate-100 shadow-premium rounded-3xl p-8 sm:p-10">
+      
+      <!-- Logo Title -->
+      <div class="text-center mb-8">
+        <a href="/" class="inline-flex items-center gap-2 text-2xl font-extrabold tracking-tight font-poppins text-slate-800">
+           <i class="bi bi-rocket-takeoff-fill text-[#3B82F6]"></i> InternSpace
+        </a>
+        <h2 class="text-lg font-bold text-slate-800 mt-4 font-poppins">Fellow Registration Intake</h2>
+        <p class="text-xs text-slate-400 mt-1">Enroll your profile to request and track internship applications.</p>
+      </div>
+
+      <!-- Registration forms -->
+      <form id="registerForm" onsubmit="handleRegistration(event)" class="space-y-5">
+        
+        <!-- Invite referrer identifier -->
+        <% if (referredByCode) { %>
+          <div class="bg-amber-50 border border-amber-100 text-amber-800 rounded-xl px-4 py-3 text-xs flex items-center gap-1.5 font-semibold">
+            <i class="bi bi-gift text-gold"></i> Referral Invitation Match code: <strong class="font-mono text-slate-850"><%= referredByCode %></strong> Applied
+            <input type="hidden" id="referredByCode" value="<%= referredByCode %>">
+          </div>
+        <% } else { %>
+          <input type="hidden" id="referredByCode" value="">
+        <% } %>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          
+          <!-- Full Name -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase">Scholastic Full Name</label>
+            <input type="text" id="name" required placeholder="e.g. Jean Dupont" class="w-full px-4 py-2.5 border border-slate-200 focus:border-accent rounded-xl text-sm focus:outline-none">
+          </div>
+
+          <!-- Phone mobile -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase">Mobile contact</label>
+            <input type="tel" id="mobile" placeholder="e.g. +1 (555) 0182" class="w-full px-4 py-2.5 border border-slate-200 focus:border-accent rounded-xl text-sm focus:outline-none">
+          </div>
+
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          
+          <!-- Email -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase">Intake Email</label>
+            <input type="email" id="email" required placeholder="e.g. name@student.com" class="w-full px-4 py-2.5 border border-slate-200 focus:border-accent rounded-xl text-sm focus:outline-none">
+          </div>
+
+          <!-- Password -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase">Secure Password</label>
+            <input type="password" id="password" required placeholder="Min 6 characters" class="w-full px-4 py-2.5 border border-slate-200 focus:border-accent rounded-xl text-sm focus:outline-none">
+          </div>
+
+        </div>
+
+        <!-- College assignment -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-slate-500 uppercase">Affiliated University</label>
+          <select id="collegeId" required class="w-full px-3 py-2.5 border border-slate-200 focus:border-accent rounded-xl text-sm focus:outline-none">
+            <option value="">-- Choose Partner University --</option>
+            <% colleges.forEach(clg => { %>
+              <option value="<%= clg.id %>"><%= clg.name %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          
+          <!-- Degree -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase">Degree Specialization</label>
+            <input type="text" id="degree" placeholder="e.g. B.Sc. Computer Science" class="w-full px-4 py-2.5 border border-slate-200 focus:border-accent rounded-xl text-sm focus:outline-none">
+          </div>
+
+          <!-- Semester -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase">Current Semester / Phase</label>
+            <input type="text" id="semester" placeholder="e.g. Semester 6 or Graduate" class="w-full px-4 py-2.5 border border-slate-200 focus:border-accent rounded-xl text-sm focus:outline-none">
+          </div>
+
+        </div>
+
+        <!-- Term Agreement checks -->
+        <div class="flex items-start">
+          <input type="checkbox" id="termsAgreement" required class="w-4 h-4 mt-0.5 text-accent border-slate-200 rounded focus:ring-accent">
+          <label for="termsAgreement" class="ml-2 text-xs text-slate-500 leading-normal select-none">
+            I certify the academic particulars are true and agree to be bound by the scholastic rules and <a href="/terms" target="_blank" class="text-accent underline font-semibold">Terms of Platform Use</a>.
+          </label>
+        </div>
+
+        <!-- Submit btn -->
+        <button type="submit" id="submitBtn" class="w-full bg-[#0F172A] hover:bg-slate-800 text-white font-bold py-3.5 px-4 rounded-xl shadow-premium transition-colors">Join Fellow Cohort</button>
+
+      </form>
+
+      <!-- Redirects back -->
+      <div class="border-t border-slate-100 mt-8 pt-6 text-center text-xs text-slate-400">
+        Already have a profile recorded? <a href="/auth/login" class="text-accent font-semibold hover:underline">Sign in gateway</a>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<script>
+  async function handleRegistration(event) {
+    event.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    if (!btn) return;
+
+    btn.disabled = true;
+    btn.innerHTML = 'Enrolling...';
+
+    const payload = {
+      name: document.getElementById('name').value,
+      email: document.getElementById('email').value,
+      mobile: document.getElementById('mobile').value,
+      password: document.getElementById('password').value,
+      collegeId: document.getElementById('collegeId').value,
+      degree: document.getElementById('degree').value,
+      semester: document.getElementById('semester').value,
+      referredByCode: document.getElementById('referredByCode').value
+    };
+
+    try {
+      const response = await fetch('/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const resData = await response.json();
+
+      if (response.ok) {
+        window.location.href = resData.redirect;
+      } else {
+        alert('Validation failed: ' + (resData.error || 'Please check entries.'));
+        btn.disabled = false;
+        btn.innerHTML = 'Join Fellow Cohort';
+      }
+    } catch (err) {
+       console.error(err);
+       alert('Connection check failed. Security timeout.');
+       btn.disabled = false;
+       btn.innerHTML = 'Join Fellow Cohort';
+    }
+  }
+</script>
+
+<%- include('../layouts/footer') %>

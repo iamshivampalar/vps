@@ -1,0 +1,92 @@
+<%- include('../layouts/header') %>
+
+<section class="py-12 bg-slate-50 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <div class="text-center mb-12">
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight font-poppins">Available Fellowships & Training Tracks</h1>
+      <p class="text-slate-500 mt-2">Filter and apply to secure professional programs sponsored by our allied partners.</p>
+    </div>
+
+    <!-- FILTER BOARD -->
+    <div class="bg-white border border-slate-100 rounded-2xl shadow-premium p-6 mb-10">
+      <form action="/programs" method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        
+        <!-- Search input -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-slate-500 uppercase">Search by Keywords</label>
+          <div class="relative">
+            <input type="text" name="search" value="<%= searchKeyword %>" placeholder="e.g. Node, HTML, Carbon..." class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-accent focus:outline-none">
+            <i class="bi bi-search absolute left-3.5 top-3.5 text-slate-400"></i>
+          </div>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-slate-500 uppercase">Filter Category</label>
+          <select name="category" class="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm focus:border-accent focus:outline-none">
+            <option value="">-- All Categories --</option>
+            <% categories.forEach(cat => { %>
+              <option value="<%= cat %>" <%= selectedCategory === cat ? 'selected' : '' %>><%= cat %></option>
+            <% }) %>
+          </select>
+        </div>
+
+        <!-- Submit actions -->
+        <div class="flex items-end justify-between gap-2">
+          <button type="submit" class="w-full bg-accent hover:bg-blue-600 text-white text-sm font-semibold py-2.5 px-4 rounded-xl shadow-premium transition-colors">Apply Filters</button>
+          <a href="/programs" class="text-xs text-slate-400 hover:text-slate-700 underline flex items-center h-10 w-fit text-nowrap select-none px-2">Reset All</a>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- PROGRAMS GRID -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <% if (programs.length > 0) { %>
+        <% programs.forEach(item => { %>
+          <div class="bg-white border border-slate-100 hover:border-accent hover:shadow-premium rounded-2xl p-6 flex flex-col gap-5 premium-transition">
+            
+            <div class="flex justify-between items-start gap-2">
+              <span class="text-xs bg-blue-50 text-accent border border-blue-100/50 px-2.5 py-1 rounded-full font-semibold uppercase tracking-wider"><%= item.category %></span>
+              <span class="text-xs text-slate-400 font-mono flex items-center gap-1"><i class="bi bi-clock"></i> <%= item.duration %></span>
+            </div>
+
+            <div>
+              <h3 class="text-lg font-bold text-themePrimary tracking-tight font-poppins hover:text-accent transition-colors">
+                <a href="/programs/<%= item.id %>"><%= item.title %></a>
+              </h3>
+              <p class="text-sm text-slate-500 mt-2 line-clamp-3 leading-relaxed"><%= item.description %></p>
+            </div>
+
+            <div class="flex flex-wrap gap-1.5 my-1">
+              <% item.skills.split(',').forEach(sk => { %>
+                <span class="text-[10px] bg-slate-100 border border-slate-200 text-slate-600 px-2 py-0.5 rounded font-medium"><%= sk.trim() %></span>
+              <% }) %>
+            </div>
+
+            <div class="border-t border-slate-100 pt-4 flex items-center justify-between mt-auto">
+              <div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase">Available Slots</p>
+                <p class="text-xs font-bold text-slate-800 flex items-center gap-1"><i class="bi bi-people-fill text-[#3B82F6]"></i> <%= item.seats %> Seats</p>
+              </div>
+              <a href="/programs/<%= item.id %>" class="bg-themePrimary hover:bg-[#3B82F6] text-white text-xs font-bold py-2.5 px-4 rounded-xl shadow-sm transition-colors flex items-center gap-1.5">
+                Inspect Details <i class="bi bi-arrow-right-short"></i>
+              </a>
+            </div>
+
+          </div>
+        <% }) %>
+      <% } else { %>
+        <div class="md:col-span-3 text-center py-20 bg-white border border-slate-100 rounded-2xl shadow-premium flex flex-col items-center">
+          <i class="bi bi-search text-5xl text-slate-300"></i>
+          <h3 class="text-lg font-bold text-[#0F172A] mt-4 font-poppins">No programs matched criteria</h3>
+          <p class="text-xs text-slate-400 max-w-xs mt-1">Try resetting search keyword filters or looking up another topic.</p>
+        </div>
+      <% } %>
+    </div>
+
+  </div>
+</section>
+
+<%- include('../layouts/footer') %>

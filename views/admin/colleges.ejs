@@ -1,0 +1,143 @@
+<%- include('../layouts/header') %>
+
+<div class="py-10 bg-slate-50 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- COCKPIT CONTROL HEADER -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 border-b border-slate-200 pb-6">
+      <div>
+        <h1 class="text-2xl font-extrabold text-[#0F172A] tracking-tight font-poppins"><i class="bi bi-mortarboard-fill text-accent"></i> Academic Institutes & Partners</h1>
+        <p class="text-xs text-slate-500 mt-1">Enroll universities, approve verification states, or inspect representative identities.</p>
+      </div>
+      <div>
+        <button onclick="document.getElementById('addCollegeModal').classList.toggle('hidden')" class="bg-themePrimary hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-premium flex items-center gap-1 leading-snug"><i class="bi bi-plus-lg"></i> Enroll allied Partner</button>
+      </div>
+    </div>
+
+    <!-- EXPEDITIVE ADD COLLEGE MODAL POPUP -->
+    <div id="addCollegeModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 flex items-center justify-center p-4">
+      <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl p-6 border border-slate-100 relative animate-fade-in">
+        
+        <div class="border-b border-slate-100 pb-3 mb-5 flex justify-between items-center">
+          <h3 class="font-extrabold text-[#0F172A] text-base font-poppins">Enroll Partner Institute</h3>
+          <button onclick="document.getElementById('addCollegeModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600"><i class="bi bi-x-lg"></i></button>
+        </div>
+
+        <form action="/admin/colleges/add" method="POST" class="space-y-4">
+          
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase">Institute Name</label>
+            <input type="text" name="name" required placeholder="e.g. Princeton Academic Center" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none">
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5">
+               <label class="text-xs font-bold text-slate-500 uppercase">Institute Code</label>
+               <input type="text" name="code" required placeholder="e.g. PRN-01" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none">
+            </div>
+            <div class="flex flex-col gap-1.5">
+               <label class="text-xs font-bold text-slate-500 uppercase">Portal Domain</label>
+               <input type="text" name="domain" required placeholder="e.g. princeton.edu" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1.5">
+               <label class="text-xs font-bold text-slate-500 uppercase">City</label>
+               <input type="text" name="city" placeholder="e.g. Princeton" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none">
+            </div>
+            <div class="flex flex-col gap-1.5">
+               <label class="text-xs font-bold text-slate-500 uppercase">State</label>
+               <input type="text" name="state" placeholder="e.g. NJ" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none">
+            </div>
+          </div>
+
+          <!-- Representative option -->
+          <div class="flex flex-col gap-1.5">
+            <label class="text-xs font-bold text-slate-500 uppercase">Assigned Representative Account</label>
+            <select name="representativeUserId" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none">
+              <option value="">-- No representative linked --</option>
+              <% representatives.forEach(rep => { %>
+                <option value="<%= rep.id %>"><%= rep.name %> (<%= rep.email %>)</option>
+              <% }) %>
+            </select>
+          </div>
+
+          <button type="submit" class="w-full bg-[#0F172A] text-white font-bold py-2.5 rounded-lg text-xs mt-3 shadow-premium transition-colors">Commit Partner Enrollment</button>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- PARTNERS LISTING INTERFACE -->
+    <div class="bg-white border border-slate-100 shadow-premium rounded-2xl overflow-hidden mt-6">
+      <table class="table-auto w-full text-left text-xs">
+        <thead>
+          <tr class="bg-slate-100/50 border-b border-slate-105 text-[10px] font-extrabold text-slate-450 uppercase tracking-wider">
+            <th class="px-6 py-4">Partners Spec</th>
+            <th class="px-6 py-4">Domain Check</th>
+            <th class="px-6 py-4">Linked Representative</th>
+            <th class="px-6 py-4">Verification</th>
+            <th class="px-6 py-4 text-right">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          <% colleges.forEach(clg => { %>
+            <tr class="hover:bg-slate-50/20 transition-colors">
+              <td class="px-6 py-4">
+                <h4 class="font-bold text-slate-800 text-sm"><%= clg.name %></h4>
+                <p class="text-[10px] text-slate-400 mt-0.5">Code: <strong class="text-slate-600"><%= clg.code || 'None' %></strong> • <%= clg.city %>, <%= clg.state %></p>
+              </td>
+              <td class="px-6 py-4 font-mono font-medium text-slate-500"><%= clg.domain %></td>
+              <td class="px-6 py-4">
+                <% if (clg.representative) { %>
+                  <p class="font-bold text-slate-755"><%= clg.representative.name %></p>
+                  <p class="text-[10px] text-slate-405 mt-0.5 truncate max-w-[150px]"><%= clg.representative.email %></p>
+                <% } else { %>
+                  <span class="text-[10px] text-slate-400">Unlinked</span>
+                <% } %>
+              </td>
+              <td class="px-6 py-4">
+                <% if (clg.isVerified) { %>
+                  <span class="bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded border border-emerald-100 uppercase text-[9px] tracking-wider">Verified Alliance</span>
+                <% } else { %>
+                  <span class="bg-amber-50 text-amber-700 font-bold px-2 py-0.5 rounded border border-amber-100 uppercase text-[9px] tracking-wider">Reviewing</span>
+                <% } %>
+              </td>
+              <td class="px-6 py-4 text-right">
+                <% if (clg.isVerified) { %>
+                  <button onclick="verifyCollege('<%= clg.id %>', false)" class="text-[10px] text-rose-500 hover:underline font-bold">Revoke verification</button>
+                <% } else { %>
+                  <button onclick="verifyCollege('<%= clg.id %>', true)" class="text-[10px] text-emerald-600 hover:underline font-bold">Verify Alliance</button>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  async function verifyCollege(collegeId, isVerified) {
+    try {
+      const response = await fetch('/admin/colleges/verify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: collegeId, isVerified: String(isVerified) })
+      });
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        alert('Credentials updating experienced errors.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Internal Server Error syncing verification status.');
+    }
+  }
+</script>
+
+<%- include('../layouts/footer') %>

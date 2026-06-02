@@ -1,0 +1,73 @@
+<%- include('../layouts/header') %>
+
+<section class="py-20 bg-slate-50">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <div class="text-center mb-16">
+      <h1 class="text-3xl sm:text-5xl font-extrabold text-themePrimary font-poppins tracking-tight">Our Academic Mission & Organizational Goals</h1>
+      <p class="text-slate-500 mt-4 text-base max-w-2xl mx-auto leading-relaxed">Providing secure training program infrastructures to transparently connect students, corporate sponsors, and university oversight committees.</p>
+    </div>
+
+    <!-- Core Vision and Mission grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+      <div class="bg-white border border-slate-100 p-8 rounded-2xl shadow-sm flex flex-col gap-4">
+        <div class="w-12 h-12 rounded-xl bg-blue-50 text-accent flex items-center justify-center text-2xl border border-blue-100"><i class="bi bi-shield-check"></i></div>
+        <h3 class="text-xl font-bold text-themePrimary font-poppins">Transparent Portfolio Standards</h3>
+        <p class="text-sm text-slate-500 leading-relaxed"><%= cmsData.mission || 'We set modern benchmarks in education project tracking. Standard models map all registrations, submissions, reviews, grade points, and certificate issues without dummy mock replies.' %></p>
+      </div>
+
+      <div class="bg-white border border-slate-100 p-8 rounded-2xl shadow-sm flex flex-col gap-4">
+        <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-2xl border border-amber-100"><i class="bi bi-rocket-takeoff"></i></div>
+        <h3 class="text-xl font-bold text-themePrimary font-poppins">Credential Verification Integrity</h3>
+        <p class="text-sm text-slate-500 leading-relaxed"><%= cmsData.vision || 'We aim to protect academic credentials from plagiarism. Our verifiable digital certificates rely on cryptographic record registry hashes matching exact completing students.' %></p>
+      </div>
+    </div>
+
+    <!-- Timeline of progress -->
+    <div class="mb-16">
+      <h2 class="text-2xl font-bold text-themePrimary text-center mb-10 font-poppins">Timeline of Strategic Evolution</h2>
+      <div class="relative border-l border-slate-200 ml-4 md:ml-32">
+        <div class="mb-10 ml-6 relative">
+          <span class="absolute -left-9 top-1 bg-accent text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold font-mono">1</span>
+          <h4 class="text-base font-bold text-themePrimary font-poppins">Platform Architecture Conceived</h4>
+          <p class="text-xs text-slate-400 font-mono mt-1">September 2024</p>
+          <p class="text-sm text-slate-500 mt-2">Began prototyping Express, Sequelize and EJS layers to manage candidate milestones with zero-configuration fallbacks.</p>
+        </div>
+        <div class="mb-10 ml-6 relative">
+          <span class="absolute -left-9 top-1 bg-accent text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold font-mono">2</span>
+          <h4 class="text-base font-bold text-themePrimary font-poppins">Establishment of University Partners</h4>
+          <p class="text-xs text-slate-400 font-mono mt-1">March 2025</p>
+          <p class="text-sm text-slate-500 mt-2">Opened testing registries for allied student representatives. Standardized JWT cookies, Multer uploads and Email logs.</p>
+        </div>
+        <div class="mb-10 ml-6 relative">
+          <span class="absolute -left-9 top-1 bg-accent text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold font-mono">3</span>
+          <h4 class="text-base font-bold text-themePrimary font-poppins">Launch of Verifiable Credentials System</h4>
+          <p class="text-xs text-slate-400 font-mono mt-1">January 2026</p>
+          <p class="text-sm text-slate-500 mt-2">Rolled out automated gold PDF certificate builders backed by QR codes linked directly back to public verification endpoints.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Team section -->
+    <div>
+      <h2 class="text-2xl font-bold text-themePrimary text-center mb-10 font-poppins">Academic Administrative Officers</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <% if (cmsData.team && cmsData.team.length) { %>
+          <% cmsData.team.forEach(tm => { %>
+            <div class="bg-white border border-slate-100 p-6 rounded-xl shadow-xs flex items-start gap-4">
+              <span class="w-12 h-12 bg-slate-100 text-[#0F172A] rounded-full flex items-center justify-center font-bold text-lg"><%= tm.name.charAt(0) %></span>
+              <div>
+                <h4 class="text-sm font-bold text-themePrimary font-poppins"><%= tm.name %></h4>
+                <p class="text-xs text-slate-500 leading-normal mb-2"><%= tm.role %></p>
+                <p class="text-xs text-slate-400 leading-relaxed"><%= tm.desc %></p>
+              </div>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<%- include('../layouts/footer') %>

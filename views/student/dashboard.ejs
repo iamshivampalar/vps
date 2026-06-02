@@ -1,0 +1,316 @@
+<%- include('../layouts/header') %>
+
+<!-- STUDENT MAIN DASHBOARD WRAPPER -->
+<div class="py-10 bg-slate-50 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- WELCOMING HERO BANNER -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 border-b border-slate-200 pb-8">
+      <div>
+        <h1 class="text-3xl font-extrabold text-[#0F172A] tracking-tight font-poppins">Welcome back, <%= user.name %>!</h1>
+        <p class="text-xs sm:text-sm text-slate-500 mt-1">Cohort Phase: <strong class="text-slate-800"><%= student.semester || 'Unassigned' %></strong> | Allied College: <strong><%= student.college?.name || 'Self-Sponsored' %></strong></p>
+      </div>
+      <div class="flex gap-3">
+        <a href="/student/profile" class="border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold px-4 py-2.5 rounded-xl transition-all flex items-center gap-1"><i class="bi bi-person-bounding-box"></i> Setup Portfolio</a>
+        <a href="/programs" class="bg-accent hover:bg-blue-600 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-premium transition-colors flex items-center gap-1"><i class="bi bi-rocket-takeoff-fill"></i> Browse Tracks</a>
+      </div>
+    </div>
+
+    <!-- MAIN KPI STATS PANEL -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      
+      <!-- Card: Enrollment Status -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Active Enrollment</p>
+            <h3 class="text-lg font-bold text-[#0F172A] mt-1 truncate max-w-[150px]">
+              <%= activeApplication ? activeApplication.internship.title : 'No Active Track' %>
+            </h3>
+          </div>
+          <span class="w-8 h-8 rounded-lg bg-teal-50 text-teal-600 flex items-center justify-center border border-teal-100"><i class="bi bi-award-fill"></i></span>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-50 flex items-center justify-between text-xs">
+          <span class="text-slate-400">Application State:</span>
+          <% if (activeApplication) { %>
+            <span class="text-xs bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded-full border border-emerald-100 uppercase tracking-widest"><%= activeApplication.status %></span>
+          <% } else { %>
+            <span class="text-xs bg-amber-50 text-amber-700 font-bold px-2 py-0.5 rounded-full border border-amber-100 uppercase tracking-widest">N/A</span>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Card: Performance score -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Performance Average</p>
+            <h3 class="text-2xl font-extrabold text-[#0F172A] mt-1 font-poppins"><%= averageGrade %>%</h3>
+          </div>
+          <span class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center border border-indigo-100"><i class="bi bi-graph-up-arrow"></i></span>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-50 flex items-center justify-between text-xs">
+          <span class="text-slate-450">Assignments Completed:</span>
+          <span class="font-extrabold text-slate-700"><%= submissionsCount %> tasks</span>
+        </div>
+      </div>
+
+      <!-- Card: Referrals count -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Referral Points Scale</p>
+            <h3 class="text-2xl font-extrabold text-[#0F172A] mt-1 font-poppins"><%= referrals.referralClicks * 10 %> pts</h3>
+          </div>
+          <span class="w-8 h-8 rounded-lg bg-yellow-50 text-yellow-600 flex items-center justify-center border border-yellow-100"><i class="bi bi-gift-fill"></i></span>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-50 flex items-center justify-between text-xs">
+          <span class="text-slate-400">Total Invitation Clicks:</span>
+          <span class="font-bold text-slate-700"><%= referrals.referralClicks %> clicks</span>
+        </div>
+      </div>
+
+      <!-- Card: Certificate issued -->
+      <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm flex flex-col justify-between">
+        <div class="flex justify-between items-start">
+          <div>
+            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Milestone Credentials</p>
+            <h3 class="text-sm font-bold text-slate-800 mt-1">
+              <%= certificate ? 'Issued & Active' : 'Review Phase' %>
+            </h3>
+          </div>
+          <span class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center border border-amber-100"><i class="bi bi-shield-fill text-gold"></i></span>
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-50 flex items-center justify-between text-xs">
+          <span class="text-slate-400">Verifiable Code:</span>
+          <span class="font-mono text-slate-600 font-semibold"><%= certificate ? certificate.certificateNumber : 'None' %></span>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CORE WORKSPACE GRIDS -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Left side: Applications/Tasks Timeline -->
+      <div class="lg:col-span-2 flex flex-col gap-8">
+        
+        <!-- BLOCK: Active Curriculum Tasks (If Enrolled) -->
+        <% if (activeApplication) { %>
+          <div class="bg-white border border-slate-100 shadow-premium rounded-2xl p-6">
+            <div class="border-b border-slate-100 pb-4 mb-6">
+              <h2 class="text-lg font-bold text-slate-800 font-poppins"><i class="bi bi-card-checklist text-accent"></i> Academic Assignment tracks</h2>
+              <p class="text-xs text-slate-400 mt-1">Submit your workflows below before deadlines to earn certified verification credentials.</p>
+            </div>
+
+            <div class="space-y-4">
+              <% if (tasks.length > 0) { %>
+                <% tasks.forEach(task => { %>
+                  <div class="border border-slate-150 rounded-xl p-5 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-slate-300 hover:bg-slate-50/20 transition-all">
+                    
+                    <div>
+                      <h4 class="text-sm font-bold text-slate-800 font-poppins"><%= task.title %></h4>
+                      <p class="text-xs text-slate-500 mt-1 max-w-md line-clamp-1"><%= task.description %></p>
+                      <div class="flex items-center gap-4 text-[10px] font-bold uppercase mt-2 text-slate-400">
+                        <span><i class="bi bi-calendar-event"></i> Due: <%= task.dueDate ? new Date(task.dueDate).toLocaleDateString('en', { month: 'short', day: 'numeric' }) : 'Flexible' %></span>
+                        <span><i class="bi bi-award"></i> Scale: <%= task.maxPoints %> Grade Pts</span>
+                      </div>
+                    </div>
+
+                    <!-- Submission tracking details -->
+                    <div class="flex flex-col sm:items-end gap-1.5 w-full sm:w-auto">
+                      <% if (task.submission) { %>
+                        <div class="flex items-center gap-1.5">
+                          <% if (task.submission.status === 'Approved') { %>
+                            <span class="text-[10px] bg-emerald-50 text-emerald-700 font-extrabold px-2 py-0.5 rounded border border-emerald-100 uppercase tracking-wider">Approved (<%= task.submission.grade %> pts)</span>
+                          <% } else if (task.submission.status === 'Revision Requested') { %>
+                            <span class="text-[10px] bg-amber-50 text-amber-700 font-extrabold px-2 py-0.5 rounded border border-amber-100 uppercase tracking-wider">Revision needed</span>
+                          <% } else if (task.submission.status === 'Rejected') { %>
+                            <span class="text-[10px] bg-rose-50 text-rose-700 font-extrabold px-2 py-0.5 rounded border border-rose-100 uppercase tracking-wider">Rejected</span>
+                          <% } else { %>
+                            <span class="text-[10px] bg-blue-50 text-[#3B82F6] font-extrabold px-2 py-0.5 rounded border border-blue-100 uppercase tracking-wider">Pending Audit</span>
+                          <% } %>
+                        </div>
+                        <a href="/student/tasks/<%= task.id %>" class="text-xs text-accent font-semibold hover:underline flex items-center gap-0.5 mt-1 select-none">
+                          Inpect Work <i class="bi bi-chevron-right text-[10px]"></i>
+                        </a>
+                      <% } else { %>
+                        <span class="text-[10px] bg-slate-100 text-slate-500 font-semibold px-20 sm:px-2 py-0.5 rounded border border-slate-200 uppercase tracking-wider text-center">Unsubmitted</span>
+                        <a href="/student/tasks/<%= task.id %>" class="bg-themePrimary text-white hover:bg-[#3B82F6] text-xs font-bold px-4 py-1.5 rounded-lg text-center mt-1 select-none w-full sm:w-auto">
+                          Submit Work
+                        </a>
+                      <% } %>
+                    </div>
+
+                  </div>
+                <% }) %>
+              <% } else { %>
+                 <p class="text-center text-slate-400 py-6 text-sm">No curriculum tasks published for this track yet.</p>
+              <% } %>
+            </div>
+          </div>
+        <% } %>
+
+        <!-- BLOCK: Active Applications list -->
+        <div class="bg-white border border-slate-100 shadow-premium rounded-2xl p-6">
+          <div class="border-b border-slate-100 pb-4 mb-6">
+            <h2 class="text-lg font-bold text-slate-800 font-poppins"><i class="bi bi-hourglass-split text-amber-500"></i> Fellowship Applications History</h2>
+            <p class="text-xs text-slate-400 mt-1">Audit statuses and comments issued by our education committees.</p>
+          </div>
+
+          <div class="space-y-4">
+            <% if (applications.length > 0) { %>
+              <% applications.forEach(app => { %>
+                <div class="border border-slate-100 rounded-xl p-4 flex flex-col justify-between gap-3 bg-slate-50/10">
+                  <div class="flex justify-between items-start gap-4">
+                    <div>
+                      <h4 class="text-sm font-bold text-slate-800 font-poppins"><%= app.internship.title %></h4>
+                      <p class="text-xs text-slate-400 mt-0.5">Applied: <%= new Date(app.createdAt).toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' }) %></p>
+                    </div>
+                    
+                    <!-- Color Status badges -->
+                    <% if (app.status === 'Approved') { %>
+                      <span class="text-[10px] bg-emerald-50 text-emerald-700 font-extrabold px-2.5 py-1 rounded-full border border-emerald-100 uppercase tracking-wide">Approved</span>
+                    <% } else if (app.status === 'Rejected') { %>
+                      <span class="text-[10px] bg-rose-50 text-rose-700 font-extrabold px-2.5 py-1 rounded-full border border-rose-100 uppercase tracking-wide">Rejected</span>
+                    <% } else if (app.status === 'Completed') { %>
+                      <span class="text-[10px] bg-[#0F172A] text-white font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wide flex items-center gap-1"><i class="bi bi-patch-check-fill text-gold"></i> Complete</span>
+                    <% } else { %>
+                      <span class="text-[10px] bg-amber-50 text-amber-700 font-extrabold px-2.5 py-1 rounded-full border border-amber-100 uppercase tracking-wide">Under Audit</span>
+                    <% } %>
+                  </div>
+                  
+                  <% if (app.adminNotes) { %>
+                    <div class="bg-white border border-slate-150 p-3 rounded-lg text-xs text-slate-500">
+                      <strong class="text-slate-700 block mb-1">Administrative feedback statement:</strong>
+                      <%= app.adminNotes %>
+                    </div>
+                  <% } %>
+                </div>
+              <% }) %>
+            <% } else { %>
+              <div class="text-center py-8">
+                <i class="bi bi-folder-x text-3xl text-slate-300"></i>
+                <p class="text-slate-450 text-xs mt-2">You are not enrolled in any fellowship tracks yet.</p>
+                <a href="/programs" class="inline-block bg-[#3B82F6] text-white font-semibold text-xs py-2 px-4 rounded-lg mt-4 shadow-sm">Explore Programs List</a>
+              </div>
+            <% } %>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right side: Certificates, referrals, alerts/logs -->
+      <div class="flex flex-col gap-8">
+        
+        <!-- PANEL: Verified Certificate details -->
+        <% if (certificate) { %>
+          <div class="bg-gradient-to-br from-[#0F172A] to-[#1E293B] text-white border border-slate-900 rounded-2xl p-6 shadow-premium relative overflow-hidden flex flex-col justify-between">
+            
+            <div class="absolute -top-10 -right-10 w-32 h-32 bg-amber-500/10 rounded-full filter blur-xl"></div>
+            
+            <div>
+              <span class="inline-flex items-center gap-1.5 text-[9px] font-bold text-gold uppercase tracking-widest mb-3"><i class="bi bi-award-fill"></i> Fellowship Award Complete</span>
+              <h3 class="text-base font-bold font-poppins text-white leading-snug"><%= certificate.internship.title %></h3>
+              <p class="text-[10px] text-slate-400 mt-1 block">Issuing Authority: InternSpace Academic Committee</p>
+            </div>
+
+            <div class="mt-8 border-t border-slate-800 pt-4 flex flex-col gap-3">
+              <span class="text-[10px] text-slate-500 font-mono block">Certificate Code: <%= certificate.certificateNumber %></span>
+              <a href="<%= certificate.pdfPath %>" download class="w-full bg-[#3B82F6] hover:bg-blue-600 text-white text-xs font-bold py-2.5 px-4 rounded-xl text-center shadow-sm flex items-center justify-center gap-1 transition-all">
+                <i class="bi bi-shield-lock-fill text-gold"></i> Download verified PDF Certificate
+              </a>
+            </div>
+
+          </div>
+        <% } %>
+
+        <!-- PANEL: Referral system Dashboard block -->
+        <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm flex flex-col gap-5">
+          <div class="border-b border-slate-50 pb-3 flex justify-between items-center">
+            <h3 class="font-bold text-slate-800 text-sm font-poppins"><i class="bi bi-gift-fill text-gold"></i> Scholarship Invitations</h3>
+            <span class="text-[10px] font-mono bg-blue-50 text-accent font-semibold px-2 py-0.5 rounded border border-blue-100">Live</span>
+          </div>
+
+          <div>
+            <p class="text-xs text-slate-500 leading-relaxed">Invite other university candidates to check the rosters. Share your unique code to build cooperative analytics:</p>
+            
+            <!-- Link boxes with click-to-copy -->
+            <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg flex items-center justify-between gap-2 mt-3 overflow-hidden">
+              <span id="referralCodeStr" class="font-mono text-xs font-bold text-slate-700 truncate"><%= student.referralCode %></span>
+              <button onclick="copyToClipboard('<%= student.referralCode %>')" class="text-xs text-accent font-bold hover:underline shrink-0">Copy code</button>
+            </div>
+            
+            <!-- Or complete URL fallback link -->
+            <div class="mt-2 text-center">
+              <button id="copyUrlBtn" onclick="copyToClipboard(window.location.origin + '/auth/register?ref=<%= student.referralCode %>')" class="text-[10px] text-slate-450 hover:text-slate-700 underline font-semibold">Copy referral signup URL</button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- PANEL: In-App Notifications alerts -->
+        <div class="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
+          <div class="border-b border-slate-50 pb-3 mb-4">
+            <h3 class="font-bold text-slate-800 text-sm font-poppins"><i class="bi bi-bell-fill text-[#3B82F6]"></i> Console Alerts</h3>
+          </div>
+
+          <div class="space-y-4">
+            <% if (notifications.length > 0) { %>
+              <% notifications.forEach(no => { %>
+                <div id="notif-card-<%= no.id %>" class="text-xs border border-slate-100 bg-slate-50/10 <%= no.status === 'unread' ? 'bg-blue-50/10 font-medium border-l-4 border-l-blue-400' : '' %> p-3 rounded-xl flex justify-between gap-3 group relative">
+                  <div>
+                    <h5 class="font-bold text-slate-800 text-[11px]"><%= no.title %></h5>
+                    <p class="text-slate-500 mt-1 text-[10px] leading-relaxed"><%= no.message %></p>
+                    <span class="text-[9px] text-slate-450 mt-1.5 block font-mono"><%= new Date(no.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></span>
+                  </div>
+                  
+                  <% if (no.status === 'unread') { %>
+                    <button onclick="dismissNotification('<%= no.id %>')" class="text-slate-400 hover:text-accent absolute top-2 right-2 h-fit text-xs select-none">
+                       <i class="bi bi-check-circle"></i>
+                    </button>
+                  <% } %>
+                </div>
+              <% }) %>
+            <% } else { %>
+              <p class="text-center text-slate-400 text-xs py-4">All alerts read cleanly.</p>
+            <% } %>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Simple clipboard support
+  function copyToClipboard(text) {
+    navigator.clipboard.writeText(text);
+    alert('Copied invitation parameters successfully to clipboard!');
+  }
+
+  // Dismiss user alerts
+  async function dismissNotification(notifId) {
+    const card = document.getElementById('notif-card-' + notifId);
+    try {
+      const res = await fetch(`/student/notifications/${notifId}/dismiss`, {
+        method: 'POST'
+      });
+      if (res.ok) {
+        if(card) {
+          card.classList.remove('border-l-4', 'border-l-blue-400', 'bg-blue-50/10');
+          // Hide check icon
+          const btn = card.querySelector('button');
+          if (btn) btn.remove();
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+</script>
+
+<%- include('../layouts/footer') %>

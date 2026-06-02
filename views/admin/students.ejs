@@ -1,0 +1,143 @@
+<%- include('../layouts/header') %>
+
+<div class="py-10 bg-slate-50 min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- COCKPIT NAVIGATION HEADER -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 border-b border-slate-200 pb-6">
+      <div>
+        <h1 class="text-2xl font-extrabold text-[#0F172A] tracking-tight font-poppins"><i class="bi bi-people-fill text-accent"></i> Fellows Directory Records</h1>
+        <p class="text-xs text-slate-500 mt-1">Search, filter, suspension-block, or export the candidate spreadsheet logs.</p>
+      </div>
+      <div>
+        <a href="/admin/students/export" class="bg-themePrimary hover:bg-slate-800 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-premium flex items-center gap-1"><i class="bi bi-file-earmark-spreadsheet"></i> Export Spreadsheet CSV</a>
+      </div>
+    </div>
+
+    <!-- MAIN SEARCH FILTER BANNER -->
+    <div class="bg-white border border-slate-100 rounded-2xl shadow-sm p-5 mb-8">
+      <form action="/admin/students" method="GET" class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        
+        <input type="text" name="search" value="<%= searchKeyword %>" placeholder="Search name/email..." class="w-full px-4 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none">
+        
+        <select name="status" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none">
+          <option value="">-- All Statuses --</option>
+          <option value="active" <%= selectedStatus === 'active' ? 'selected' : '' %>>Active</option>
+          <option value="suspended" <%= selectedStatus === 'suspended' ? 'selected' : '' %>>Suspended</option>
+        </select>
+
+        <select name="collegeId" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg text-xs focus:outline-none">
+          <option value="">-- All Universities --</option>
+          <% colleges.forEach(clg => { %>
+            <option value="<%= clg.id %>" <%= selectedCollege === clg.id ? 'selected' : '' %>><%= clg.name %></option>
+          <% }) %>
+        </select>
+
+        <div class="flex gap-2">
+          <button type="submit" class="w-full bg-[#3B82F6] hover:bg-blue-600 text-white text-xs font-bold py-2 px-4 rounded-lg transition-colors">Search</button>
+          <a href="/admin/students" class="border border-slate-200 text-xs text-slate-500 hover:bg-slate-50 flex items-center justify-center p-2 rounded-lg text-nowrap select-none font-bold">Reset</a>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- STUDENT TABLE -->
+    <div class="bg-white border border-slate-100 shadow-premium rounded-2xl overflow-hidden">
+      <table class="table-auto w-full text-left text-xs">
+        
+        <thead>
+          <tr class="bg-slate-100/50 border-b border-slate-100 text-[10px] font-extrabold uppercase text-slate-450 tracking-wider">
+            <th class="px-6 py-4">Scholar Profile</th>
+            <th class="px-6 py-4">Admission specifications</th>
+            <th class="px-6 py-4">Auth Status</th>
+            <th class="px-6 py-4">Code</th>
+            <th class="px-6 py-4 text-right">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody class="divide-y divide-slate-100">
+          <% if (students.length > 0) { %>
+            <% students.forEach(st => { %>
+              <tr class="hover:bg-slate-50/30 transition-colors">
+                
+                <td class="px-6 py-4">
+                  <div class="flex items-center gap-3">
+                    <span class="w-8 h-8 bg-slate-100 rounded-full font-bold flex items-center justify-center text-slate-700 text-xs selection-none">
+                        <%= st.user.name.charAt(0) %>
+                    </span>
+                    <div>
+                      <h4 class="font-bold text-slate-800"><%= st.user.name %></h4>
+                      <p class="text-[10px] text-slate-400 font-mono"><%= st.user.email %></p>
+                    </div>
+                  </div>
+                </td>
+
+                <td class="px-6 py-4">
+                  <p class="font-medium text-slate-700"><%= st.college?.name || 'Self-Sponsored' %></p>
+                  <p class="text-[10px] text-slate-500 mt-0.5"><%= st.degree || 'Unspecified' %> • Semester <%= st.semester || 'N/A' %></p>
+                </td>
+
+                <td class="px-6 py-4">
+                  <% if (st.user.status === 'active') { %>
+                    <span class="text-[9px] bg-emerald-50 text-emerald-700 font-bold px-2 py-0.5 rounded border border-emerald-100 uppercase tracking-widest">Active</span>
+                  <% } else { %>
+                    <span class="text-[9px] bg-rose-50 text-rose-700 font-bold px-2 py-0.5 rounded border border-rose-100 uppercase tracking-widest">Suspended</span>
+                  <% } %>
+                </td>
+
+                <td class="px-6 py-4 font-mono font-bold text-slate-650"><%= st.referralCode %></td>
+
+                <td class="px-6 py-4 text-right">
+                  <div class="flex justify-end gap-2">
+                    
+                    <% if (st.resume) { %>
+                      <a href="<%= st.resume %>" target="_blank" class="border border-slate-200 text-xs text-slate-600 px-3 py-1.5 rounded-lg hover:bg-slate-50 select-none"><i class="bi bi-file-earmark-pdf"></i> Resume</a>
+                    <% } %>
+
+                    <% if (st.user.status === 'active') { %>
+                      <button onclick="toggleUser('<%= st.user.id %>', 'suspended')" class="bg-rose-50 border border-rose-100 hover:bg-rose-100 text-rose-700 font-bold px-3 py-1.5 rounded-lg text-xs">Suspend</button>
+                    <% } else { %>
+                      <button onclick="toggleUser('<%= st.user.id %>', 'active')" class="bg-emerald-50 border border-emerald-100 hover:bg-emerald-100 text-emerald-700 font-bold px-3 py-1.5 rounded-lg text-xs">Activate</button>
+                    <% } %>
+
+                  </div>
+                </td>
+
+              </tr>
+            <% }) %>
+          <% } else { %>
+            <tr><td colspan="5" class="text-center py-8 text-slate-400">No student profile records matches filtering keywords.</td></tr>
+          <% } %>
+        </tbody>
+
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  async function toggleUser(userId, status) {
+    if (!confirm(`Are you sure you want to set this candidate status to ${status}?`)) return;
+
+    try {
+      const response = await fetch('/admin/students/toggle-status', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, status })
+      });
+
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        const data = await response.json();
+        alert('Action failed: ' + (data.error || 'Server error.'));
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Internal Server Error syncing account command states.');
+    }
+  }
+</script>
+
+<%- include('../layouts/footer') %>

@@ -1,0 +1,96 @@
+<%- include('../layouts/header') %>
+
+<section class="py-16 bg-slate-50 min-h-screen">
+  <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+    <div class="text-center mb-12">
+      <span class="inline-flex items-center gap-1.5 px-3 py-1 mb-4 text-xs font-semibold text-amber-700 bg-amber-50 border border-amber-100 rounded-full font-poppins"><i class="bi bi-shield-fill text-gold"></i> Cryptographic Registry Audit</span>
+      <h1 class="text-3xl sm:text-4xl font-extrabold text-[#0F172A] tracking-tight font-poppins">Secure Credential Registry</h1>
+      <p class="text-slate-500 mt-2">Validate completion certificates issued to fellows instantly. Enter the verification ID below.</p>
+    </div>
+
+    <!-- MAIN SEARCH CARD -->
+    <div class="bg-white border border-slate-100 rounded-3xl shadow-premium p-8 mb-10">
+      <form action="/verify" method="GET" class="flex flex-col sm:flex-row gap-3">
+        <div class="relative w-full">
+          <input type="text" name="id" value="<%= searchedId %>" required placeholder="e.g. CERT-XXXX-XXXX" class="w-full pl-12 pr-4 py-3.5 border border-slate-200 focus:border-accent rounded-xl text-base focus:outline-none font-mono">
+          <i class="bi bi-safe absolute left-4.5 top-4.5 text-slate-400"></i>
+        </div>
+        <button type="submit" class="bg-themePrimary hover:bg-accent text-white font-semibold px-8 py-3.5 rounded-xl transition-colors shrink-0">Query Registry</button>
+      </form>
+    </div>
+
+    <!-- QUERY OUTCOME PANEL -->
+    <% if (searchedId) { %>
+      <% if (certificate) { %>
+        
+        <!-- Verified State Card -->
+        <div class="bg-white border-2 border-emerald-500 shadow-premium rounded-3xl p-8 animate-fade-in relative overflow-hidden">
+          
+          <!-- Diagonal decorative ribbon -->
+          <div class="absolute -top-1 -right-1 bg-emerald-500 text-white text-[10px] font-bold px-8 py-2 rotate-45 transform origin-top-right uppercase tracking-wider">
+            Verified Valid
+          </div>
+
+          <div class="flex items-center gap-4 border-b border-slate-100 pb-6 mb-6">
+            <span class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center text-3xl border border-emerald-100"><i class="bi bi-patch-check-fill"></i></span>
+            <div>
+              <h3 class="text-lg font-bold text-[#0F172A] font-poppins">Credential Verification Success</h3>
+              <p class="text-xs text-slate-400">Registry Match Found. Cryptographic integrity confirmed.</p>
+            </div>
+          </div>
+
+          <!-- Specifications List -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm mb-6">
+            
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Awarded Scholar</p>
+              <p class="font-extrabold text-[#0F172A] text-base font-poppins"><%= certificate.student.user.name %></p>
+              <p class="text-xs text-slate-500 mt-0.5"><%= certificate.student.college?.name || 'Self-Sponsored' %></p>
+            </div>
+
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Program Track Complete</p>
+              <p class="font-bold text-[#0F172A]"><%= certificate.internship.title %></p>
+              <p class="text-xs text-slate-400 mt-0.5">Category: <%= certificate.internship.category %> | <%= certificate.internship.duration %></p>
+            </div>
+
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Issue Timestamp</p>
+              <p class="font-medium text-slate-700 font-mono"><%= new Date(certificate.issueDate).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></p>
+            </div>
+
+            <div>
+              <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Security Sign</p>
+              <p class="font-bold text-emerald-600 font-mono flex items-center gap-1 text-xs"><i class="bi bi-key-fill"></i> COHORT_SIGN_VERIFIED_OK</p>
+            </div>
+
+          </div>
+
+          <!-- Certificate Action controls -->
+          <div class="border-t border-slate-150 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <span class="text-xs text-slate-400 font-mono">Identifier: <%= certificate.certificateNumber %></span>
+            <a href="<%= certificate.pdfPath %>" download class="bg-themePrimary hover:bg-accent text-white text-xs font-bold px-6 py-3 rounded-xl shadow-premium transition-all flex items-center gap-2">
+              <i class="bi bi-file-earmark-pdf"></i> Download Official Certificate (PDF)
+            </a>
+          </div>
+
+        </div>
+
+      <% } else { %>
+        
+        <!-- Error State Card -->
+        <div class="bg-white border-2 border-rose-500 shadow-premium rounded-3xl p-8 text-center animate-fade-in flex flex-col items-center">
+          <span class="w-14 h-14 bg-rose-50 text-rose-500 rounded-full flex items-center justify-center text-3xl border border-rose-100 mb-4"><i class="bi bi-x-circle-fill"></i></span>
+          <h3 class="text-lg font-bold text-[#0F172A] font-poppins">Registry Lookup Failed</h3>
+          <p class="text-sm text-slate-500 max-w-sm mt-1 mb-4">No completion fellowship matches the unique credential code or the certificate record has been revoked.</p>
+          <span class="text-xs font-mono bg-slate-100 border border-slate-200 text-slate-500 px-3 py-1.5 rounded-lg">Queried ID: <%= searchedId %></span>
+        </div>
+
+      <% } %>
+    <% } %>
+
+  </div>
+</section>
+
+<%- include('../layouts/footer') %>

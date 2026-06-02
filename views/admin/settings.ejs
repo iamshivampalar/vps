@@ -1,0 +1,224 @@
+<%- include('../layouts/header') %>
+
+<div class="py-10 bg-slate-50 min-h-screen font-sans">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- COCKPIT CONTROL HEADER -->
+    <div class="mb-8 border-b border-slate-200 pb-6">
+      <h1 class="text-2xl font-extrabold text-[#0F172A] tracking-tight font-poppins"><i class="bi bi-gear-fill text-accent"></i> Console Configurations</h1>
+      <p class="text-xs text-slate-500 mt-1">Configure SMTP relays, adjust CMS static text blocks, and monitor administrative activity log logs.</p>
+    </div>
+
+    <!-- MAIN INTERACTIVE CONFIG TABS -->
+    <ul class="nav nav-tabs border-b border-slate-200 flex gap-4 mb-8 text-sm font-bold poppins" id="configTabs" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active py-3 px-1 border-b-2 border-transparent text-slate-500 hover:text-slate-800 focus:outline-none" id="sys-tab" data-bs-toggle="tab" data-bs-target="#sys-panel" type="button" role="tab">Platform Coordinates</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link py-3 px-1 border-b-2 border-transparent text-slate-500 hover:text-slate-800 focus:outline-none" id="cms-tab" data-bs-toggle="tab" data-bs-target="#cms-panel" type="button" role="tab">Static Page CMS Content</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link py-3 px-1 border-b-2 border-transparent text-slate-500 hover:text-slate-800 focus:outline-none" id="audit-tab" data-bs-toggle="tab" data-bs-target="#audit-panel" type="button" role="tab">Durable Audit Logs Ledger</button>
+      </li>
+    </ul>
+
+    <div class="tab-content" id="configTabsContent">
+      
+      <!-- TAB 1: Platform Parameters -->
+      <div class="tab-pane fade show active" id="sys-panel" role="tabpanel">
+        <div class="bg-white border border-slate-100 shadow-premium rounded-3xl p-8 max-w-3xl">
+          
+          <h3 class="font-extrabold text-[#0F172A] text-base mb-6 font-poppins border-b border-slate-50 pb-3">Global settings variables</h3>
+
+          <form action="/admin/settings/update" method="POST" class="space-y-6">
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-bold text-slate-500 uppercase">Platform Name (SITE_NAME)</label>
+                <input type="text" name="SITE_NAME" value="<%= settings.SITE_NAME %>" class="w-full px-4 py-2.5 border border-slate-200 focus:border-accent rounded-xl text-xs focus:outline-none font-medium">
+              </div>
+              <div class="flex flex-col gap-1.5">
+                <label class="text-xs font-bold text-slate-500 uppercase">Maintenance Block mode</label>
+                <select name="MAINTENANCE_MODE" class="w-full px-3 py-2.5 border border-slate-200 focus:border-accent rounded-xl text-xs focus:outline-none">
+                  <option value="false" <%= settings.MAINTENANCE_MODE === 'false' ? 'selected' : '' %>>Disabled - Live production mode</option>
+                  <option value="true" <%= settings.MAINTENANCE_MODE === 'true' ? 'selected' : '' %>>Enabled - Block public users</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-1.5">
+              <label class="text-xs font-bold text-slate-500 uppercase">Platform Meta description</label>
+              <textarea name="SITE_DESCRIPTION" rows="3" class="w-full px-4 py-2.5 border border-slate-200 focus:border-accent rounded-xl text-xs focus:outline-none"><%= settings.SITE_DESCRIPTION %></textarea>
+            </div>
+
+            <!-- SMTP relay specifications -->
+            <div class="bg-slate-50 border border-slate-150 rounded-2xl p-6 space-y-4">
+              <span class="text-xs font-extrabold text-[#0D0F14] font-poppins uppercase tracking-wider block border-b border-slate-200 pb-2"><i class="bi bi-send-fill text-accent"></i> SMTP Relay Gate coordinates</span>
+              
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs font-medium">
+                <div class="flex flex-col gap-1.5">
+                   <label class="text-[10px] text-slate-450 uppercase font-bold">SMTP Relay Host</label>
+                   <input type="text" name="SMTP_HOST" value="<%= settings.SMTP_HOST %>" placeholder="smtp.gmail.com" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg bg-white focus:outline-none">
+                </div>
+                <div class="flex flex-col gap-1.5">
+                   <label class="text-[10px] text-slate-450 uppercase font-bold">Relay Port</label>
+                   <input type="text" name="SMTP_PORT" value="<%= settings.SMTP_PORT %>" placeholder="587" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg bg-white focus:outline-none">
+                </div>
+                <div class="flex flex-col gap-1.5">
+                   <label class="text-[10px] text-slate-450 uppercase font-bold">SMTP Auth User</label>
+                   <input type="text" name="SMTP_USER" value="<%= settings.SMTP_USER %>" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg bg-white  focus:outline-none">
+                </div>
+              </div>
+
+              <div class="flex flex-col gap-1.5 text-xs font-medium">
+                 <label class="text-[10px] text-slate-450 uppercase font-bold">Pass verification key</label>
+                 <input type="password" name="SMTP_PASS" value="<%= settings.SMTP_PASS %>" placeholder="••••••••" class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg bg-white focus:outline-none">
+                 <span class="text-[9px] text-slate-400">If undefined or host is empty, system automatically routes emails to the durable Emaillog database model dynamically.</span>
+              </div>
+            </div>
+
+            <button type="submit" class="bg-themePrimary hover:bg-slate-800 text-white font-bold py-3.5 px-6 rounded-xl text-xs shadow-premium transition-colors">Save corporate settings parameters</button>
+
+          </form>
+
+        </div>
+      </div>
+
+      <!-- TAB 2: Custom EJS Page editor CMS -->
+      <div class="tab-pane fade" id="cms-panel" role="tabpanel">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          
+          <!-- Slug pages selector panel -->
+          <div class="bg-white border border-slate-100 shadow-premium p-6 rounded-2xl h-fit">
+            <h4 class="font-bold text-slate-800 text-sm font-poppins mb-4">Static Resource rosters</h4>
+            <div class="flex flex-col gap-2">
+              <% cmsPages.forEach((cg) => { %>
+                <button onclick="loadCmsEditor('<%= cg.slug %>', '<%= cg.title %>', `<%= cg.content %>`)" class="w-full text-left p-3 text-xs font-bold text-slate-705 border border-slate-100 rounded-xl hover:bg-slate-50 transition-all flex items-center justify-between">
+                   <span><%= cg.title %> </span>
+                   <span class="text-[9px] font-mono text-slate-400">slug: <%= cg.slug %></span>
+                </button>
+              <% }) %>
+            </div>
+          </div>
+
+          <!-- Edit interface -->
+          <div class="md:col-span-2 bg-white border border-slate-100 shadow-premium p-6 rounded-2xl">
+             <h4 class="font-bold text-slate-801 text-sm font-poppins mb-4">Live Layout Editor</h4>
+             
+             <form id="cmsUpdateForm" onsubmit="commitCmsChange(event)" class="space-y-4 text-xs font-medium">
+               
+               <div class="grid grid-cols-2 gap-4">
+                  <div class="flex flex-col gap-1">
+                     <label class="text-[10px] text-slate-400 uppercase font-bold">Content Title</label>
+                     <input type="text" id="cmsTitle" required class="w-full px-3 py-2 border border-slate-200 focus:border-accent rounded-lg focus:outline-none">
+                  </div>
+                  <div class="flex flex-col gap-1">
+                     <label class="text-[10px] text-slate-400 uppercase font-bold">Resource slug</label>
+                     <input type="text" id="cmsSlug" readonly class="w-full px-3 py-2 border border-slate-200 bg-slate-100 rounded-lg focus:outline-none font-mono">
+                  </div>
+               </div>
+
+               <div class="flex flex-col gap-1">
+                  <label class="text-[10px] text-slate-400 uppercase font-bold text-base">Resource details markdown / markdown text</label>
+                  <textarea id="cmsContent" required rows="9" class="w-full p-4 border border-slate-200 focus:border-accent rounded-lg focus:outline-none text-xs font-mono leading-relaxed" placeholder="Render corporate text structures here..."></textarea>
+               </div>
+
+               <button type="submit" id="cmsBtn" class="bg-[#3B82F6] hover:bg-blue-600 text-white font-bold py-2.5 px-6 rounded-xl transition-colors">Commit static page update</button>
+
+             </form>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TAB 3: Activity Log security Audit Ledger -->
+      <div class="tab-pane fade" id="audit-panel" role="tabpanel">
+        <div class="bg-white border border-slate-100 shadow-premium rounded-2xl overflow-hidden text-xs">
+          <div class="bg-slate-50 p-4 border-b border-slate-100 font-bold text-[#0F172A] font-poppins">
+             Durable security Audits Ledger Log Coordinates (Tracked in ActivityLog Model)
+          </div>
+          <table class="table-auto w-full text-left">
+            <thead>
+              <tr class="bg-slate-105 border-b border-slate-150 text-[10px] font-extrabold uppercase text-slate-400 tracking-wider">
+                <th class="px-6 py-4">Security Authorized User</th>
+                <th class="px-6 py-4">Category / Action executed</th>
+                <th class="px-6 py-4">Details statement parameters</th>
+                <th class="px-6 py-4">Terminal IP</th>
+                <th class="px-6 py-4 text-right">Registered time</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 font-medium">
+              <% activityLogs.forEach(al => { %>
+                <tr class="hover:bg-slate-50/20">
+                  <td class="px-6 py-3 font-semibold text-slate-800"><%= al.user?.name || 'Academic system auto' %></td>
+                  <td class="px-6 py-3 font-bold text-blue-700 font-poppins"><%= al.action %></td>
+                  <td class="px-6 py-3 text-slate-500 max-w-sm"><%= al.details %></td>
+                  <td class="px-6 py-3 font-mono font-bold text-slate-450"><%= al.ipAddress %></td>
+                  <td class="px-6 py-3 text-right font-mono text-slate-400"><%= new Date(al.createdAt).toLocaleString() %></td>
+                </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+  // Dynamic CMS loader helper
+  function loadCmsEditor(slug, title, content) {
+    document.getElementById('cmsSlug').value = slug;
+    document.getElementById('cmsTitle').value = title;
+    document.getElementById('cmsContent').value = content;
+  }
+
+  // Handle AJAX update CMS
+  async function commitCmsChange(event) {
+    event.preventDefault();
+    const btn = document.getElementById('cmsBtn');
+    if (!btn) return;
+
+    btn.disabled = true;
+    btn.innerHTML = 'Commiting update...';
+
+    const payload = {
+      slug: document.getElementById('cmsSlug').value,
+      title: document.getElementById('cmsTitle').value,
+      content: document.getElementById('cmsContent').value
+    };
+
+    try {
+      const response = await fetch('/admin/cms/update', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (response.ok) {
+        alert('Success! Content parsed dynamically into the database registry.');
+        window.location.reload();
+      } else {
+        alert('CMS dynamic update failed.');
+        btn.disabled = false;
+        btn.innerHTML = 'Commit static page update';
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Internal Server Error writing CMS updates.');
+      btn.disabled = false;
+      btn.innerHTML = 'Commit static page update';
+    }
+  }
+
+  // Pre-load first CMS item on bootstrap load
+  window.addEventListener('DOMContentLoaded', () => {
+    // If we have dynamic cmsPages, load first element
+    <% if (cmsPages && cmsPages.length) { %>
+      loadCmsEditor('<%= cmsPages[0].slug %>', '<%= cmsPages[0].title %>', `<%= cmsPages[0].content %>`);
+    <% } %>
+  });
+</script>
+
+<%- include('../layouts/footer') %>

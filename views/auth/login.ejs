@@ -1,0 +1,101 @@
+<%- include('../layouts/header') %>
+
+<section class="py-20 bg-slate-50 min-h-[90vh] flex items-center">
+  <div class="max-w-md w-full mx-auto px-4">
+    
+    <div class="bg-white border border-slate-100 shadow-premium rounded-3xl p-8 sm:p-10">
+      
+      <!-- Logo center indicator -->
+      <div class="text-center mb-8">
+        <a href="/" class="inline-flex items-center gap-2 text-2xl font-extrabold tracking-tight font-poppins text-slate-800">
+           <i class="bi bi-rocket-takeoff-fill text-[#3B82F6]"></i> InternSpace
+        </a>
+        <h2 class="text-lg font-bold text-slate-800 mt-4 font-poppins">Welcome Back, Fellow</h2>
+        <p class="text-xs text-slate-400 mt-1">Access your curriculum dashboard and check your milestones.</p>
+      </div>
+
+      <!-- Authentication form -->
+      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-5">
+        
+        <!-- Email inputs -->
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-bold text-slate-500 uppercase">Registered Email</label>
+          <div class="relative">
+            <input type="email" id="email" required placeholder="e.g. name@university.edu" class="w-full pl-10 pr-4 py-3 border border-slate-200 focus:border-accent rounded-xl text-sm focus:outline-none">
+            <i class="bi bi-envelope absolute left-3.5 top-3.5 text-slate-400"></i>
+          </div>
+        </div>
+
+        <!-- Password Inputs -->
+        <div class="flex flex-col gap-1.5">
+          <div class="flex justify-between items-center">
+            <label class="text-xs font-bold text-slate-500 uppercase">Secure Password</label>
+            <a href="#" onclick="alert('Password reset trigger: Please drop a note to support officers at admin@internspace.org to verify credentials.')" class="text-xs text-[#3B82F6] hover:underline">Forgot password?</a>
+          </div>
+          <div class="relative">
+            <input type="password" id="password" required placeholder="••••••••" class="w-full pl-10 pr-4 py-3 border border-slate-200 focus:border-accent rounded-xl text-sm focus:outline-none">
+            <i class="bi bi-lock absolute left-3.5 top-3.5 text-slate-400"></i>
+          </div>
+        </div>
+
+        <!-- Remember me session checks -->
+        <div class="flex items-center">
+          <input type="checkbox" id="rememberMe" class="w-4 h-4 text-accent border-slate-200 rounded focus:ring-accent">
+          <label for="rememberMe" class="ml-2 text-xs font-semibold text-slate-500 select-none">Remember my login on this browser</label>
+        </div>
+
+        <button type="submit" id="submitBtn" class="w-full bg-[#0F172A] hover:bg-[#1E293B] text-white font-bold py-3 px-4 rounded-xl shadow-premium transition-colors">Authorize Access</button>
+
+      </form>
+
+      <!-- Registration redirects -->
+      <div class="border-t border-slate-100 mt-8 pt-6 text-center text-xs text-slate-400">
+        New candidate seeking admission? <a href="/auth/register" class="text-accent font-semibold hover:underline">Launch your profile</a>
+      </div>
+
+    </div>
+
+  </div>
+</section>
+
+<script>
+  async function handleLogin(event) {
+    event.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    if (!btn) return;
+
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Auditing...';
+
+    const payload = {
+      email: document.getElementById('email').value,
+      password: document.getElementById('password').value,
+      rememberMe: document.getElementById('rememberMe').checked
+    };
+
+    try {
+      const response = await fetch('/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      const resData = await response.json();
+
+      if (response.ok) {
+        window.location.href = resData.redirect;
+      } else {
+        alert('Credentials check rejected: ' + (resData.error || 'Check username and password.'));
+        btn.disabled = false;
+        btn.innerHTML = 'Authorize Access';
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Security lookup encountered an active connection failure.');
+      btn.disabled = false;
+      btn.innerHTML = 'Authorize Access';
+    }
+  }
+</script>
+
+<%- include('../layouts/footer') %>
